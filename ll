@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
-$LOAD_PATH << File.join( File.dirname( __FILE__ ), "lib" )
+$real_path = File.symlink?( __FILE__ ) ? File.readlink( __FILE__ ) : __FILE__
+$LOAD_PATH << File.join( File.dirname( $real_path ), "lib" )
 
 
 require "fileutils"
@@ -75,7 +76,7 @@ end
 
 command = ARGV.shift
 if method_for( command )
-  FileUtils.cd File.dirname( __FILE__ ) do
+  FileUtils.cd File.dirname( $real_path ) do
     self.__send__ method_for( command )
   end
 elsif command.nil?
