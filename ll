@@ -36,7 +36,7 @@ def method_for command
     return :lock
   when "unlock"
     return :unlock
-  when "show"
+  when "show", "status", "stat", "st"
     return :show
   when "version", "-v", "--version"
     return :version
