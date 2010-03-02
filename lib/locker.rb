@@ -1,25 +1,21 @@
 require "ll"
 require "lock"
+require "lock-list"
 
 
+#
+# A lock manager class
+#
 class Locker
   def initialize
-    @locks = {}
+    @locks = LockList.new
   end
 
 
   def lock nodes, from, to
     new_lock = Lock.new( from, to )
-    nodes.each do | each |
-      raise LL::LockError, "Failed to lock #{ each }" if already_locked?( each, new_lock )
-    end
-    nodes.each do | each |
-      if @locks[ each ].nil?
-        @locks[ each ] = [ new_lock ]
-      else
-        @locks[ each ] << new_lock
-      end
-    end
+    check_if_lockable nodes, new_lock
+    add_lock nodes, new_lock
   end
 
 
@@ -40,6 +36,11 @@ class Locker
   end
 
 
+  def find_similar_locks lock
+    @locks.find_similar_locks lock
+  end
+
+
   def nodes
     @locks.keys
   end
@@ -55,10 +56,18 @@ class Locker
   ##############################################################################
 
 
-  def already_locked? node, lock
-    return unless @locks[ node ]
-    @locks[ node ].inject( false ) do | result, each |
-      result ||= each.overwrap_with( lock )
+  def add_lock nodes, lock
+    nodes.each do | each |
+      @locks.add each, lock
+    end
+  end
+
+
+  def check_if_lockable nodes, lock
+    nodes.each do | each |
+      unless @locks.lockable?( each, lock )
+        raise LL::LockError, "Failed to lock #{ each }"
+      end
     end
   end
 end

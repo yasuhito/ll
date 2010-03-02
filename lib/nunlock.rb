@@ -52,30 +52,18 @@ class Nunlock < App
   end
 
 
-  def similar_locks_exist? lock
-    ( @locker.nodes - [ @node ] ).each do | each |
-      @locker.status( each ).each_with_index do | l, i |
-        return true if l.duration == lock.duration
-      end
-    end
-    false
-  end
-
-
   def show_similar_locks lock
-    ( @locker.nodes - [ @node ] ).each do | each |
-      @locker.status( each ).each do | l |
-        if l.duration == lock.duration
-          info "#{ each }:"
-          info "  #{ l }"
-        end
+    @locker.find_similar_locks( lock ).each do | node, lock |
+      if node != @node
+        info "#{ node }:"
+        info "  #{ lock }"
       end
     end
   end
 
 
   def remove_similar_locks_with lock
-    if similar_locks_exist? lock
+    if @locker.find_similar_locks( lock ) != [[ @node, lock ]]
       show_similar_locks lock
       print "Unlock similar locks? [Y/n]"
       yesno = $stdin.gets.chomp.downcase
