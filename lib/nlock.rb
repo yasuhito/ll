@@ -49,7 +49,12 @@ class Nlock < App
       if natural_time == "today"
         Chronic.parse "this midnight"
       else
-        @from + ChronicDuration.parse( natural_time )
+        duration = ChronicDuration.parse( natural_time )
+        if duration.nil?
+          raise "Parse error '#{ natural_time }'"
+        else
+          @from + ChronicDuration.parse( natural_time )
+        end
       end
     end
   end
