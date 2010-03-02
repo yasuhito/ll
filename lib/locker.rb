@@ -46,7 +46,7 @@ class Locker
 
 
   def status node
-    @locks[ node ].sort
+    @locks[ node ].sort!
   end
 
 
