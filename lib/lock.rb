@@ -2,8 +2,9 @@
 # A lock class
 #
 class Lock
-  DEFAULT_TIME_FORMAT = "%Y/%m/%d (%a) %H:%M"
-  SHORT_TIME_FORMAT = "%H:%M"
+  TIME_FORMAT_LONG = "%Y/%m/%d (%a) %H:%M"
+  TIME_FORMAT_MEDIUM = "%m/%d (%a) %H:%M"
+  TIME_FORMAT_SHORT = "%H:%M"
 
 
   attr_reader :from
@@ -42,21 +43,32 @@ class Lock
 
 
   def from_string
-    @from.strftime DEFAULT_TIME_FORMAT
+    @from.strftime TIME_FORMAT_LONG
   end
 
 
   def to_string
-    if same_day?
-      @to.strftime SHORT_TIME_FORMAT
+    if fit_within_a_day?
+      @to.strftime TIME_FORMAT_SHORT
+    elsif fit_within_a_year?
+      @to.strftime TIME_FORMAT_MEDIUM
     else
-      @to.strftime DEFAULT_TIME_FORMAT
+      @to.strftime TIME_FORMAT_LONG
     end
   end
 
 
-  def same_day?
-    format = "%Y/%m/%d"
+  def fit_within_a_day?
+    compare_from_to_in "%Y/%m/%d"
+  end
+
+
+  def fit_within_a_year?
+    compare_from_to_in "%Y"
+  end
+
+
+  def compare_from_to_in format
     @from.strftime( format ) == @to.strftime( format )
   end
 end

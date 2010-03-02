@@ -8,6 +8,20 @@ describe Lock do
       lock = Lock.new( from, from + 3600 )
       lock.to_s.should == "1979/05/27 (Sun) 05:00 - 06:00"
     end
+
+
+    it "should be shortened if its duration falls within a year" do
+      from = Chronic.parse( "1979-01-31 23:00" )
+      lock = Lock.new( from, from + 7200 )
+      lock.to_s.should == "1979/01/31 (Wed) 23:00 - 02/01 (Thu) 01:00"
+    end
+
+
+    it "should not be shortened if its duration crosses a new year's day" do
+      from = Chronic.parse( "1978-12-31 23:00" )
+      lock = Lock.new( from, from + 7200 )
+      lock.to_s.should == "1978/12/31 (Sun) 23:00 - 1979/01/01 (Mon) 01:00"
+    end
   end
 end
 
