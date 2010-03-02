@@ -1,0 +1,4 @@
+コマンド体系を次のように
+  ll lock
+  ll show (list とか ls とかも受け付けるべし)
+  ll unlock (release, del, delete とかも受け付けるべし)

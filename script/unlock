@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+#
+# Usage:
+#  % ll unlock tick001
+
+
+require "nunlock"
+
+
+begin
+  app = Nunlock.new
+  app.parse ARGV.dup
+  app.start
+rescue
+  $stderr.puts $!.message
+  $!.backtrace.each do | each |
+    $stderr.puts each
+  end
+end
+
+
+### Local variables:
+### mode: Ruby
+### coding: utf-8-unix
+### indent-tabs-mode: nil
+### End:

@@ -1,0 +1,46 @@
+# Usage:
+#  % ll lock tick001
+#  % ll lock tick001 8hours
+#  % ll lock tick001 2weeks
+#  % ll lock tick001 3days --from tomorrow
+#  % ll lock tick001 today
+#  % ll lock tick${01..96} today # zsh
+#  % ll lock tick${t} today `seq -s " " -w 1 96` # bash
+
+
+require "nlock"
+require "nshow"
+
+
+def show
+  show = Nshow.new
+  show.parse [ ARGV.dup.first ]
+  show.load
+  show.start
+end
+
+
+begin
+  app = Nlock.new
+  app.parse ARGV.dup
+  app.load
+  app.start
+  show
+rescue LL::LockError
+  $stderr.puts $!.message
+  show
+  exit -1
+rescue
+  $stderr.puts $!.message
+  $!.backtrace.each do | each |
+    $stderr.puts each
+  end
+  exit -1
+end
+
+
+### Local variables:
+### mode: Ruby
+### coding: utf-8-unix
+### indent-tabs-mode: nil
+### End:

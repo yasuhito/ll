@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+#
+# Usage:
+#  % ll show
+#  % ll show tick001
+
+
+require "nshow"
+
+
+begin
+  app = Nshow.new
+  app.parse ARGV.dup
+  app.load
+  app.start
+rescue
+  $stderr.puts $!.message
+  $!.backtrace.each do | each |
+    $stderr.puts each
+  end
+end
+
+
+### Local variables:
+### mode: Ruby
+### coding: utf-8-unix
+### indent-tabs-mode: nil
+### End:
