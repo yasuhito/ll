@@ -19,28 +19,8 @@ class Locker
   end
 
 
-  def find_similar_locks lock
-    @locks.find_similar_locks lock
-  end
-
-
-  def delete node, lock
-    @locks.delete node, lock
-  end
-
-
-  def delete_similar_locks lock
-    @locks.delete_similar_locks lock
-  end
-
-
-  def nodes
-    @locks.nodes
-  end
-
-
-  def status node
-    @locks.status node
+  def method_missing message, *args
+    @locks.__send__ message, *args
   end
 
 
