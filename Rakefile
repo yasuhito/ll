@@ -2,6 +2,7 @@ require "rubygems"
 
 require "cucumber/rake/task"
 require "rake/clean"
+require "reek/adapters/rake_task"
 require "spec/rake/spectask"
 require "spec/rake/verify_rcov"
 
@@ -16,11 +17,18 @@ def rcov_opts
 end
 
 
-task :default => [ :verify_rcov ]
+task :default => [ :reek, :verify_rcov ]
 
 
 # an alias for Emacs feature-mode.
 task :features => [ :cucumber ]
+
+
+Reek::RakeTask.new do | t |
+  t.fail_on_error = true
+  t.verbose = false
+  t.source_files = 'lib/**/*.rb'
+end
 
 
 Cucumber::Rake::Task.new do | t |
