@@ -13,8 +13,10 @@ class LockList
   end
 
 
-  def add node, lock
-    @list[ node ] += [ lock ]
+  def add nodes, lock
+    nodes.each do | each |
+      @list[ each ] += [ lock ]
+    end
     save
   end
 
@@ -40,9 +42,11 @@ class LockList
   end
 
 
-  def lockable? node, lock
-    @list[ node ].inject( true ) do | result, each |
-      result && ( not each.overwrap_with( lock ) )
+  def try_lock nodes, lock
+    nodes.each do | each |
+      unless lockable?( each, lock )
+        raise LL::LockError, "Failed to lock #{ each }"
+      end
     end
   end
 
@@ -62,13 +66,25 @@ class LockList
   ##############################################################################
 
 
+  def lockable? node, lock
+    @list[ node ].inject( true ) do | result, each |
+      result && ( not each.overwrap_with( lock ) )
+    end
+  end
+
+
   def delete_obsolete_locks
-    nodes.each do | node |
-      @list[ node ].each do | lock |
-        delete node, lock if lock.obsolete?
-      end
+    nodes.each do | each |
+      delete_obsolete_locks_of each
     end
     save
+  end
+
+
+  def delete_obsolete_locks_of node
+    @list[ node ].delete_if do | lock |
+      lock.obsolete?
+    end
   end
 
 

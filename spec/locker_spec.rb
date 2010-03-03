@@ -32,7 +32,7 @@ describe Locker do
   end
 
 
-  context "when someone alredy locked tick001 today" do
+  context "when someone already locked tick001 today" do
     before :each do
       @locker.lock [ "tick001" ], @time_now, Chronic.parse( "this midnight" )
     end

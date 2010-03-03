@@ -54,11 +54,15 @@ describe LockList do
   end
 
 
-  it "should determine if users can acquire a new lock" do
+  it "should raise if users cannot acquire a new lock" do
     @locks.add "tick001", @new_lock
 
-    @locks.lockable?( "tick001", @new_lock ).should be_false
-    @locks.lockable?( "tick002", @new_lock ).should be_true
+    lambda do
+      @locks.try_lock( [ "tick001" ], @new_lock ).should be_false
+    end.should raise_error( LL::LockError, "Failed to lock tick001" )
+    lambda do
+      @locks.try_lock( [ "tick002" ], @new_lock ).should be_true
+    end.should_not raise_error
   end
 end
 
