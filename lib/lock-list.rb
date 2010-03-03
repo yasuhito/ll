@@ -31,9 +31,7 @@ class LockList < Hash
     result = []
     nodes.each do | each |
       @list[ each ].each do | l |
-        if l.from == lock.from && l.to == lock.to
-          result << [ each, l ]
-        end
+        result << [ each, l ] if l == lock
       end
     end
     result
@@ -43,7 +41,7 @@ class LockList < Hash
   def delete_similar_locks lock
     nodes.each do | each |
       @list[ each ].delete_if do | l |
-        l.from == lock.from && l.to == lock.to
+        l == lock
       end
       @list.delete each if @list[ each ].empty?
     end

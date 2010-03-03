@@ -27,6 +27,11 @@ class Lock
   end
 
 
+  def == other
+    @from == other.from && @to == other.to
+  end
+
+
   def <=> other
     @from <=> other.from
   end
