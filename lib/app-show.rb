@@ -29,7 +29,7 @@ class AppShow < App
 
   def show node
     status = @locker.status( node )
-    return if status.nil?
+    return if status.empty?
     info "#{ node }:"
     status.each do | each |
       info "  #{ each }"

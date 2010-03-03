@@ -1,49 +1,40 @@
+#
+# A lock list manager class.
+#
 class LockList < Hash
   def initialize
-    @list = {}
+    @list = Hash.new( [] )
   end
 
 
   def add node, lock
-    if @list[ node ].nil?
-      @list[ node ] = [ lock ]
-    else
-      @list[ node ] << lock
-    end
+    @list[ node ] += [ lock ]
   end
 
 
   def delete node, lock
     @list[ node ] -= [ lock ]
-    @list.delete node if @list[ node ].empty?
-  end
-
-
-  def lockable? node, lock
-    return true if @list[ node ].nil?
-    @list[ node ].inject( true ) do | result, each |
-      result &= ( not each.overwrap_with( lock ) )
-    end
   end
 
 
   def find_similar_locks lock
-    result = []
-    nodes.each do | each |
-      @list[ each ].each do | l |
-        result << [ each, l ] if l == lock
-      end
+    nodes.inject( [] ) do | result, each |
+      result << each if @list[ each ].include?( lock )
+      result
     end
-    result
   end
 
 
   def delete_similar_locks lock
     nodes.each do | each |
-      @list[ each ].delete_if do | l |
-        l == lock
-      end
-      @list.delete each if @list[ each ].empty?
+      delete each, lock
+    end
+  end
+
+
+  def lockable? node, lock
+    @list[ node ].inject( true ) do | result, each |
+      result && ( not each.overwrap_with( lock ) )
     end
   end
 
@@ -54,7 +45,7 @@ class LockList < Hash
 
 
   def status node
-    @list[ node ].sort! if @list[ node ]
+    @list[ node ].sort!
   end
 end
 

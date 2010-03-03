@@ -50,7 +50,7 @@ class AppUnlock < App
 
 
   def show_similar_locks lock
-    @locker.find_similar_locks( lock ).each do | node, lock |
+    @locker.find_similar_locks( lock ).each do | node |
       if node != @node
         info "#{ node }:"
         info "  #{ lock }"
