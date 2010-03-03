@@ -20,9 +20,9 @@ class AppUnlock < App
     if @locker.status( @node ).size == 1
       lock = @locker.status( @node )[ 0 ]
       info "  #{ lock }"
-      if prompt( "Unlock? [Y/n]" )
+      if prompt_yesno( "Unlock? [Y/n]" )
         @locker.delete @node, lock
-        remove_similar_locks_with lock
+        remove_similar_locks lock
       end
     else
       @locker.status( @node ).each_with_index do | each, idx |
@@ -32,7 +32,7 @@ class AppUnlock < App
       if id
         lock = @locker.status( @node )[ id ]
         @locker.delete @node, lock
-        remove_similar_locks_with lock
+        remove_similar_locks lock
       end
     end
   end
@@ -41,14 +41,6 @@ class AppUnlock < App
   ##############################################################################
   private
   ##############################################################################
-
-
-  def prompt_select
-    info "Select (0..#{ @locker.status( @node ).size - 1 })"
-    id = $stdin.gets.chomp
-    return if id == ""
-    id.to_i
-  end
 
 
   def show_similar_locks lock
@@ -61,16 +53,24 @@ class AppUnlock < App
   end
 
 
-  def remove_similar_locks_with lock
+  def remove_similar_locks lock
     unless @locker.find_similar_locks( lock ).empty?
       show_similar_locks lock
-      return unless prompt( "Unlock similar locks? [Y/n]" )
+      return unless prompt_yesno( "Unlock similar locks? [Y/n]" )
       @locker.delete_similar_locks( lock )
     end
   end
 
 
-  def prompt message
+  def prompt_select
+    print "Select [0..#{ @locker.status( @node ).size - 1 }]"
+    id = $stdin.gets.chomp
+    return if id == ""
+    id.to_i
+  end
+
+
+  def prompt_yesno message
     print message
     yesno = $stdin.gets.chomp.downcase
     yesno == "" || yesno == "y"
