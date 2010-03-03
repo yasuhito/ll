@@ -5,7 +5,7 @@ Given /^空のロックデータファイル$/ do
 end
 
 
-When /^nlock "([^\"]*)" でロックをかけた$/ do | argv |
+When /^ll lock "([^\"]*)" でロックをかけた$/ do | argv |
   @messenger = StringIO.new
   @app = Nlock.new( @messenger )
   @app.parse argv.split( " " ) + [ "--data", @nlock_dat ]
