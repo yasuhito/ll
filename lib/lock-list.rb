@@ -9,6 +9,7 @@ class LockList
     else
       @list = Hash.new( [] )
     end
+    delete_obsolete_locks
   end
 
 
@@ -59,6 +60,16 @@ class LockList
   ##############################################################################
   private
   ##############################################################################
+
+
+  def delete_obsolete_locks
+    nodes.each do | node |
+      @list[ node ].each do | lock |
+        delete node, lock if lock.obsolete?
+      end
+    end
+    save
+  end
 
 
   def save

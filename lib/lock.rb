@@ -22,6 +22,11 @@ class Lock
   end
 
 
+  def obsolete?
+    @to < Time.now
+  end
+
+
   def overwrap_with other
     not ( @to < other.from || other.to < @from )
   end
