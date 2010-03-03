@@ -1,8 +1,7 @@
 module LL
-  #
-  # Raised when locking failed
-  #
+  # Locking error
   class LockError < StandardError; end
+  # Natural time parsing error
   class ParseError < StandardError; end
 
 
