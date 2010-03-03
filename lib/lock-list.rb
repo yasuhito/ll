@@ -1,3 +1,6 @@
+require "ll"
+
+
 #
 # A lock list manager class.
 #
@@ -29,8 +32,11 @@ class LockList
 
   def find_similar_locks lock
     nodes.inject( [] ) do | result, each |
-      result << each if @list[ each ].include?( lock )
-      result
+      if @list[ each ].include?( lock )
+        result + [ each ]
+      else
+        result
+      end
     end
   end
 

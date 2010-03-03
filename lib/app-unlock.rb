@@ -19,7 +19,7 @@ class AppUnlock < App
     locks = @locker.status( @node )
     return if locks.size == 0
     @view.show_with_index @node, locks
-    lock = select_lock
+    lock = select_a_lock
     remove_similar_locks lock if lock
   end
 
@@ -46,29 +46,38 @@ class AppUnlock < App
   end
 
 
-  def select_lock
-    if @locker.status( @node ).size == 1
-      prompt_yesno "Unlock? [Y/n]"
+  def select_a_lock
+    id = get_lock_id
+    @locker.status( @node )[ id ] if id
+  end
+
+
+  def get_lock_id
+    locks_size = @locker.status( @node ).size
+    if locks_size == 1
+      0 if prompt_yesno( "Unlock? [Y/n]" )
     else
-      prompt_select
+      prompt_select "Select [0..#{ locks_size - 1 }]"
     end
   end
 
 
-  def prompt_select
-    locks = @locker.status( @node )
-    print "Select [0..#{ locks.size - 1 }]"
-    id = $stdin.gets.chomp
-    return if id == ""
-    locks[ id.to_i ]
+  def prompt_select message
+    print message
+    case id = $stdin.gets.chomp
+    when /\A\d+\Z/
+      id.to_i
+    else
+      nil
+    end
   end
 
 
   def prompt_yesno message
     print message
-    yesno = $stdin.gets.chomp.downcase
-    if yesno == "" || yesno == "y"
-      @locker.status( @node )[ 0 ]
+    case $stdin.gets.chomp.downcase
+    when "y", ""
+      true
     else
       nil
     end

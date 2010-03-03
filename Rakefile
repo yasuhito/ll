@@ -1,8 +1,11 @@
 require "rubygems"
 
 require "cucumber/rake/task"
+require "flog"
 require "rake/clean"
 require "reek/adapters/rake_task"
+require "roodi"
+require "roodi_task"
 require "spec/rake/spectask"
 require "spec/rake/verify_rcov"
 
@@ -17,7 +20,7 @@ def rcov_opts
 end
 
 
-task :default => [ :reek, :verify_rcov ]
+task :default => [ :reek, :roodi, :flog, :verify_rcov ]
 
 
 # an alias for Emacs feature-mode.
@@ -27,7 +30,33 @@ task :features => [ :cucumber ]
 Reek::RakeTask.new do | t |
   t.fail_on_error = true
   t.verbose = false
-  t.source_files = 'lib/**/*.rb'
+  t.reek_opts = "--quiet"
+  t.source_files = "lib/**/*.rb"
+end
+
+
+RoodiTask.new do | t |
+  t.patterns =  [ "lib/**/*.rb" ]
+end
+
+
+desc "Analyze for code complexity"
+task :flog do
+  flog = Flog.new
+  flog.flog [ "lib" ]
+  threshold = 10
+
+  bad_methods = flog.totals.select do | name, score |
+    name != "main#none" && score > threshold
+  end
+  bad_methods.sort do | a, b |
+    a[ 1 ] <=> b[ 1 ]
+  end.each do | name, score |
+    puts "%8.1f: %s" % [ score, name ]
+  end
+  unless bad_methods.empty?
+    raise "#{ bad_methods.size } methods have a flog complexity > #{ threshold }"
+  end
 end
 
 

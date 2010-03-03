@@ -1,4 +1,3 @@
-require "locker"
 require "optparse"
 require "view"
 

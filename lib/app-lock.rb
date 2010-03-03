@@ -2,6 +2,8 @@ require "rubygems"
 
 require "app"
 require "chronic_duration"
+require "ll"
+require "locker"
 
 
 #
@@ -43,15 +45,21 @@ class AppLock < App
 
 
   def determine_duration_end natural_time
-    if natural_time.nil?
+    case natural_time
+    when nil
       @from + DEFAULT_DURATION
-    elsif natural_time == "today"
+    when "today"
       Chronic.parse "this midnight"
     else
-      duration = ChronicDuration.parse( natural_time )
-      raise LL::ParseError, "Parse error '#{ natural_time }'" if duration.nil?
-      @from + duration
+      @from + parse_duration( natural_time )
     end
+  end
+
+
+  def parse_duration natural_time
+    duration = ChronicDuration.parse( natural_time )
+    raise LL::ParseError, "Parse error '#{ natural_time }'" if duration.nil?
+    duration
   end
 
 
