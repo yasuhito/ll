@@ -7,7 +7,7 @@ require "chronic_duration"
 #
 # Node locker class
 #
-class Nlock < App
+class AppLock < App
   DEFAULT_DURATION = ChronicDuration.parse( "1 hour" )
 
 

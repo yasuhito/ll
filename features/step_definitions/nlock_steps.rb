@@ -7,7 +7,7 @@ end
 
 When /^ll lock "([^\"]*)" でロックをかけた$/ do | argv |
   @messenger = StringIO.new
-  @app = Nlock.new( @messenger )
+  @app = AppLock.new( @messenger )
   @app.parse argv.split( " " ) + [ "--data", @nlock_dat ]
   @app.load
   @app.start

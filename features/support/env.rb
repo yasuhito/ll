@@ -3,9 +3,9 @@ $LOAD_PATH.unshift File.join( File.dirname( __FILE__ ), "/../../lib" )
 
 require "rubygems"
 
+require "app-lock"
 require "app-show"
 require "chronic"
-require "nlock"
 
 
 ### Local variables:

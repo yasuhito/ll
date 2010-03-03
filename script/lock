@@ -8,8 +8,8 @@
 #  % ll lock tick${t} today `seq -s " " -w 1 96` # bash
 
 
+require "app-lock"
 require "app-show"
-require "nlock"
 
 
 def show
@@ -21,7 +21,7 @@ end
 
 
 begin
-  app = Nlock.new
+  app = AppLock.new
   app.parse ARGV.dup
   app.load
   app.start
