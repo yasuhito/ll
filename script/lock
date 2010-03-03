@@ -24,7 +24,7 @@ begin
   app.parse ARGV.dup
   app.start
   show
-rescue LL::LockError
+rescue LL::LockError, LL::ParseError
   $stderr.puts $!.message
   show
   exit -1

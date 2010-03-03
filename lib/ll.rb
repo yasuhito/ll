@@ -3,6 +3,7 @@ module LL
   # Raised when locking failed
   #
   class LockError < StandardError; end
+  class ParseError < StandardError; end
 
 
   module VERSION #:nodoc:

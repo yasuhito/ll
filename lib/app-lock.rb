@@ -45,17 +45,12 @@ class AppLock < App
   def determine_duration_end natural_time
     if natural_time.nil?
       @from + DEFAULT_DURATION
+    elsif natural_time == "today"
+      Chronic.parse "this midnight"
     else
-      if natural_time == "today"
-        Chronic.parse "this midnight"
-      else
-        duration = ChronicDuration.parse( natural_time )
-        if duration.nil?
-          raise "Parse error '#{ natural_time }'"
-        else
-          @from + ChronicDuration.parse( natural_time )
-        end
-      end
+      duration = ChronicDuration.parse( natural_time )
+      raise LL::ParseError, "Parse error '#{ natural_time }'" if duration.nil?
+      @from + duration
     end
   end
 
