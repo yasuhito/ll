@@ -34,9 +34,9 @@ def method_for command
   case command
   when "lock"
     return :lock
-  when "unlock"
+  when "unlock", "u", "rm", "release", "rel", "r", "delete", "del", "d"
     return :unlock
-  when "show", "status", "stat", "st"
+  when "show", "status", "stat", "st", "s", "list", "l", "ls"
     return :show
   when "version", "-v", "--version"
     return :version
