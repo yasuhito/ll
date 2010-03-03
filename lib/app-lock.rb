@@ -20,6 +20,7 @@ class AppLock < App
 
   def parse argv
     @opt.parse!( argv )
+    @locker = Locker.new( @data )
     @nodes = argv.shift.split( "," )
     @to = determine_duration_end( argv[ 0 ] )
   end
@@ -28,7 +29,6 @@ class AppLock < App
   # [FIXME] global lock
   def start
     @locker.lock @nodes, @from, @to
-    save
   end
 
 

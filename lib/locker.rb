@@ -7,8 +7,8 @@ require "lock-list"
 # A lock manager class
 #
 class Locker
-  def initialize
-    @locks = LockList.new
+  def initialize data
+    @locks = LockList.new( data )
   end
 
 
@@ -16,23 +16,6 @@ class Locker
     new_lock = Lock.new( from, to )
     check_if_lockable nodes, new_lock
     add_lock nodes, new_lock
-  end
-
-
-  def load file
-    if FileTest.exists?( file )
-      @locks = Marshal.load( IO.read( file ) )
-    end
-  end
-
-
-  def save file
-    File.open( file, "w" ) do | f |
-      @locks.each_pair do | key, value |
-        @locks.delete( key ) if value.empty?
-      end
-      f.print Marshal.dump( @locks )
-    end
   end
 
 

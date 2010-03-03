@@ -15,7 +15,6 @@ require "app-show"
 def show
   show = AppShow.new
   show.parse [ ARGV.dup.first ]
-  show.load
   show.start
 end
 
@@ -23,7 +22,6 @@ end
 begin
   app = AppLock.new
   app.parse ARGV.dup
-  app.load
   app.start
   show
 rescue LL::LockError

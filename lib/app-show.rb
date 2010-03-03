@@ -10,12 +10,12 @@ class AppShow < App
       @data = val
     end
     @opt.parse! argv
+    @locker = Locker.new( @data )
     @argv = argv
   end
 
 
   def start
-    load
     nodes.each do | node |
       show node
     end

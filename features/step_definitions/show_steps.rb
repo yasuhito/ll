@@ -2,7 +2,7 @@
 When /^ロックを表示した$/ do
   @messenger = StringIO.new
   @app = AppShow.new( @messenger )
-  @app.parse [ "--data", @nlock_dat ]
+  @app.parse [ "--data", @data ]
   @app.start
 end
 

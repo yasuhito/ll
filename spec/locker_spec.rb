@@ -3,7 +3,8 @@ require File.join( File.dirname( __FILE__ ), "spec_helper" )
 
 describe Locker do
   before :each do
-    @locker = Locker.new
+    FileUtils.rm_f "/tmp/ll.dat"
+    @locker = Locker.new( "/tmp/ll.dat" )
     @time_now = Time.now
   end
 

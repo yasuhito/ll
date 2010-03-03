@@ -10,19 +10,9 @@ class App
 
 
   def initialize messenger = nil
-    @locker = Locker.new
+    @data = DEFAULT_DATA
     @opt = OptionParser.new
     @messenger = messenger
-  end
-
-
-  def load
-    @locker.load data
-  end
-
-
-  def save
-    @locker.save data
   end
 
 
@@ -33,11 +23,6 @@ class App
 
   def info message
     ( @messenger || $stdout ).puts message
-  end
-
-
-  def data
-    @data || DEFAULT_DATA
   end
 end
 

@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 Given /^空のロックデータファイル$/ do
-  @nlock_dat = "/tmp/nlock.dat"
-  FileUtils.rm_f @nlock_dat
+  @data = "/tmp/ll.dat"
+  FileUtils.rm_f @data
 end
 
 
 When /^ll lock "([^\"]*)" でロックをかけた$/ do | argv |
   @messenger = StringIO.new
   @app = AppLock.new( @messenger )
-  @app.parse argv.split( " " ) + [ "--data", @nlock_dat ]
-  @app.load
+  @app.parse argv.split( " " ) + [ "--data", @data ]
   @app.start
 end
 

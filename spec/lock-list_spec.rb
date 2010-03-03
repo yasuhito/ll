@@ -3,7 +3,8 @@ require File.join( File.dirname( __FILE__ ), "spec_helper" )
 
 describe LockList do
   before :each do
-    @locks = LockList.new
+    FileUtils.rm_f "/tmp/ll.dat"
+    @locks = LockList.new( "/tmp/ll.dat" )
     @old_lock = Lock.new( Chronic.parse( "yesterday" ), Chronic.parse( "today" ) )
     @new_lock = Lock.new( Chronic.parse( "today" ), Chronic.parse( "tomorrow" ) )
   end

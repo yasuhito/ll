@@ -6,12 +6,16 @@ require "app"
 #
 class AppUnlock < App
   def parse argv
+    @opt.on( "--data [FILE]" ) do | val |
+      @data = val
+    end
+    @opt.parse! argv
+    @locker = Locker.new( @data )
     @node = argv[ 0 ]
   end
 
 
   def start
-    load
     info "#{ @node }:"
     if @locker.status( @node ).size == 1
       lock = @locker.status( @node )[ 0 ]
@@ -19,7 +23,6 @@ class AppUnlock < App
       if prompt( "Unlock? [Y/n]" )
         @locker.delete @node, lock
         remove_similar_locks_with lock
-        save
       end
     else
       @locker.status( @node ).each_with_index do | each, idx |
@@ -30,7 +33,6 @@ class AppUnlock < App
         lock = @locker.status( @node )[ id ]
         @locker.delete @node, lock
         remove_similar_locks_with lock
-        save
       end
     end
   end

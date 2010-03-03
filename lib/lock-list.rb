@@ -1,19 +1,26 @@
 #
 # A lock list manager class.
 #
-class LockList < Hash
-  def initialize
-    @list = Hash.new( [] )
+class LockList
+  def initialize data
+    @data = data
+    if FileTest.exists?( @data )
+      @list = Marshal.load( IO.read( @data ) )
+    else
+      @list = Hash.new( [] )
+    end
   end
 
 
   def add node, lock
     @list[ node ] += [ lock ]
+    save
   end
 
 
   def delete node, lock
     @list[ node ] -= [ lock ]
+    save
   end
 
 
@@ -46,6 +53,18 @@ class LockList < Hash
 
   def status node
     @list[ node ].sort!
+  end
+
+
+  ##############################################################################
+  private
+  ##############################################################################
+
+
+  def save
+    File.open( @data, "w" ) do | dat |
+      dat.print Marshal.dump( @list )
+    end
   end
 end
 
