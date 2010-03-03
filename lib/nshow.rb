@@ -31,7 +31,7 @@ class Nshow < App
     status = @locker.status( node )
     return if status.nil?
     info "#{ node }:"
-    status.sort.each do | each |
+    status.each do | each |
       info "  #{ each }"
     end
   end

@@ -14,13 +14,24 @@ class Nunlock < App
     load
     info "#{ @node }:"
     if @locker.status( @node ).size == 1
-      info "  #{ @locker.status( @node )[ 0 ] }"
-      show_yesno_prompt
+      lock = @locker.status( @node )[ 0 ]
+      info "  #{ lock }"
+      if prompt( "Unlock? [Y/n]" )
+        @locker.delete @node, lock
+        remove_similar_locks_with lock
+        save
+      end
     else
       @locker.status( @node ).each_with_index do | each, idx |
         info "  #{ idx }) #{ each }"
       end
-      show_select_prompt
+      id = prompt_select
+      if id
+        lock = @locker.status( @node )[ id ]
+        @locker.delete @node, lock
+        remove_similar_locks_with lock
+        save
+      end
     end
   end
 
@@ -30,25 +41,11 @@ class Nunlock < App
   ##############################################################################
 
 
-  def show_yesno_prompt
-    print "Unlock? [Y/n]"
-    yesno = $stdin.gets.chomp.downcase
-    if yesno == "" || yesno == "y"
-      remove_similar_locks_with @locker.status( @node )[ 0 ]
-      @locker.status( @node ).delete_at 0
-      save
-    end
-  end
-
-
-  def show_select_prompt
+  def prompt_select
     info "Select (0..#{ @locker.status( @node ).size - 1 })"
     id = $stdin.gets.chomp
     return if id == ""
-    id = id.to_i
-    remove_similar_locks_with @locker.status( @node )[ id ]
-    @locker.status( @node ).delete_at id
-    save
+    id.to_i
   end
 
 
@@ -63,19 +60,18 @@ class Nunlock < App
 
 
   def remove_similar_locks_with lock
-    if @locker.find_similar_locks( lock ) != [[ @node, lock ]]
+    unless @locker.find_similar_locks( lock ).empty?
       show_similar_locks lock
-      print "Unlock similar locks? [Y/n]"
-      yesno = $stdin.gets.chomp.downcase
-      return unless yesno == "" || yesno == "y"
-      ( @locker.nodes - [ @node ] ).each do | each |
-        @locker.status( each ).each_with_index do | l, i |
-          if l.duration == lock.duration
-            @locker.status( each ).delete_at i
-          end
-        end
-      end
+      return unless prompt( "Unlock similar locks? [Y/n]" )
+      @locker.delete_similar_locks( lock )
     end
+  end
+
+
+  def prompt message
+    print message
+    yesno = $stdin.gets.chomp.downcase
+    yesno == "" || yesno == "y"
   end
 end
 

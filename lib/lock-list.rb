@@ -1,16 +1,27 @@
 class LockList < Hash
+  def initialize
+    @list = {}
+  end
+
+
   def add node, lock
-    if self[ node ].nil?
-      self[ node ] = [ lock ]
+    if @list[ node ].nil?
+      @list[ node ] = [ lock ]
     else
-      self[ node ] << lock
+      @list[ node ] << lock
     end
   end
 
 
+  def delete node, lock
+    @list[ node ] -= [ lock ]
+    @list.delete node if @list[ node ].empty?
+  end
+
+
   def lockable? node, lock
-    return true if self[ node ].nil?
-    self[ node ].inject( true ) do | result, each |
+    return true if @list[ node ].nil?
+    @list[ node ].inject( true ) do | result, each |
       result &= ( not each.overwrap_with( lock ) )
     end
   end
@@ -18,14 +29,34 @@ class LockList < Hash
 
   def find_similar_locks lock
     result = []
-    self.keys.each do | each |
-      self[ each ].each do | l |
-        if l.duration == lock.duration
+    nodes.each do | each |
+      @list[ each ].each do | l |
+        if l.from == lock.from && l.to == lock.to
           result << [ each, l ]
         end
       end
     end
     result
+  end
+
+
+  def delete_similar_locks lock
+    nodes.each do | each |
+      @list[ each ].delete_if do | l |
+        l.from == lock.from && l.to == lock.to
+      end
+      @list.delete each if @list[ each ].empty?
+    end
+  end
+
+
+  def nodes
+    @list.keys.sort
+  end
+
+
+  def status node
+    @list[ node ].sort! if @list[ node ]
   end
 end
 
