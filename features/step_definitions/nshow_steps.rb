@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 When /^ロックを表示した$/ do
   @messenger = StringIO.new
-  @app = Nshow.new( @messenger )
+  @app = AppShow.new( @messenger )
   @app.parse [ "--data", @nlock_dat ]
   @app.start
 end

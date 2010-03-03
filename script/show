@@ -5,11 +5,11 @@
 #  % ll show tick001
 
 
-require "nshow"
+require "app-show"
 
 
 begin
-  app = Nshow.new
+  app = AppShow.new
   app.parse ARGV.dup
   app.load
   app.start

@@ -4,7 +4,7 @@ require "app"
 #
 # Displays lock status.
 #
-class Nshow < App
+class AppShow < App
   def parse argv
     @opt.on( "--data [FILE]" ) do | val |
       @data = val
