@@ -1,6 +1,9 @@
 require "rubygems"
 
+require "rake/tasklib"
 require "cucumber/rake/task"
+require "flay"
+require "flay_task"
 require "flog"
 require "rake/clean"
 require "reek/adapters/rake_task"
@@ -20,11 +23,14 @@ def rcov_opts
 end
 
 
-task :default => [ :reek, :roodi, :flog, :verify_rcov ]
+task :default => [ :quality, :verify_rcov ]
 
 
 # an alias for Emacs feature-mode.
 task :features => [ :cucumber ]
+
+
+task :quality => [ :reek, :roodi, :flog, :flay ]
 
 
 Reek::RakeTask.new do | t |
@@ -57,6 +63,12 @@ task :flog do
   unless bad_methods.empty?
     raise "#{ bad_methods.size } methods have a flog complexity > #{ threshold }"
   end
+end
+
+
+FlayTask.new do | t |
+  t.dirs = [ "lib", "script" ]
+  t.threshold = 0
 end
 
 
