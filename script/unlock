@@ -4,11 +4,11 @@
 #  % ll unlock tick001
 
 
-require "nunlock"
+require "app-unlock"
 
 
 begin
-  app = Nunlock.new
+  app = AppUnlock.new
   app.parse ARGV.dup
   app.start
 rescue

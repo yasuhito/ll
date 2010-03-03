@@ -4,7 +4,7 @@ require "app"
 #
 # A Node unlocker class.
 #
-class Nunlock < App
+class AppUnlock < App
   def parse argv
     @node = argv[ 0 ]
   end
