@@ -16,26 +16,11 @@ class AppUnlock < App
 
 
   def start
-    return if @locker.status( @node ).size == 0
-    info "#{ @node }:"
-    if @locker.status( @node ).size == 1
-      lock = @locker.status( @node )[ 0 ]
-      info "  #{ lock }"
-      if prompt_yesno( "Unlock? [Y/n]" )
-        @locker.delete @node, lock
-        remove_similar_locks lock
-      end
-    else
-      @locker.status( @node ).each_with_index do | each, idx |
-        info "  #{ idx }) #{ each }"
-      end
-      id = prompt_select
-      if id
-        lock = @locker.status( @node )[ id ]
-        @locker.delete @node, lock
-        remove_similar_locks lock
-      end
-    end
+    locks = @locker.status( @node )
+    return if locks.size == 0
+    @view.show_with_index @node, locks
+    lock = select_lock
+    remove_similar_locks lock if lock
   end
 
 
@@ -46,15 +31,13 @@ class AppUnlock < App
 
   def show_similar_locks lock
     @locker.find_similar_locks( lock ).each do | node |
-      if node != @node
-        info "#{ node }:"
-        info "  #{ lock }"
-      end
+      @view.show node, [ lock ] if node != @node
     end
   end
 
 
   def remove_similar_locks lock
+    @locker.delete @node, lock
     unless @locker.find_similar_locks( lock ).empty?
       show_similar_locks lock
       return unless prompt_yesno( "Unlock similar locks? [Y/n]" )
@@ -63,18 +46,32 @@ class AppUnlock < App
   end
 
 
+  def select_lock
+    if @locker.status( @node ).size == 1
+      prompt_yesno "Unlock? [Y/n]"
+    else
+      prompt_select
+    end
+  end
+
+
   def prompt_select
-    print "Select [0..#{ @locker.status( @node ).size - 1 }]"
+    locks = @locker.status( @node )
+    print "Select [0..#{ locks.size - 1 }]"
     id = $stdin.gets.chomp
     return if id == ""
-    id.to_i
+    locks[ id.to_i ]
   end
 
 
   def prompt_yesno message
     print message
     yesno = $stdin.gets.chomp.downcase
-    yesno == "" || yesno == "y"
+    if yesno == "" || yesno == "y"
+      @locker.status( @node )[ 0 ]
+    else
+      nil
+    end
   end
 end
 

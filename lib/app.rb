@@ -1,5 +1,6 @@
 require "locker"
 require "optparse"
+require "view"
 
 
 #
@@ -11,18 +12,8 @@ class App
 
   def initialize messenger = nil
     @data = DEFAULT_DATA
+    @view = View.new( messenger )
     @opt = OptionParser.new
-    @messenger = messenger
-  end
-
-
-  ##############################################################################
-  private
-  ##############################################################################
-
-
-  def info message
-    ( @messenger || $stdout ).puts message
   end
 end
 
