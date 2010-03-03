@@ -1,16 +1,23 @@
-#!/usr/bin/env ruby
-#
 # Usage:
 #  % ll unlock tick001
 
 
+require "app-show"
 require "app-unlock"
+
+
+def show
+  show = AppShow.new
+  show.parse []
+  show.start
+end
 
 
 begin
   app = AppUnlock.new
   app.parse ARGV.dup
   app.start
+  show
 rescue
   $stderr.puts $!.message
   $!.backtrace.each do | each |

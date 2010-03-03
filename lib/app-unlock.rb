@@ -16,6 +16,7 @@ class AppUnlock < App
 
 
   def start
+    return if @locker.status( @node ).size == 0
     info "#{ @node }:"
     if @locker.status( @node ).size == 1
       lock = @locker.status( @node )[ 0 ]
