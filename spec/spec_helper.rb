@@ -7,7 +7,7 @@ require "spec"
 require "chronic"
 require "chronic_duration"
 require "lock"
-require "lock-list"
+require "locker"
 require "view"
 
 

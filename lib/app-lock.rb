@@ -3,7 +3,7 @@ require "rubygems"
 require "app"
 require "chronic_duration"
 require "ll"
-require "lock-list"
+require "locker"
 
 
 #
