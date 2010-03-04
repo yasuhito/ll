@@ -1,7 +1,3 @@
-# Usage:
-#  % ll unlock tick001
-
-
 require "app-show"
 require "app-unlock"
 

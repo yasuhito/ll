@@ -1,8 +1,3 @@
-# Usage:
-#  % ll show
-#  % ll show tick001
-
-
 require "app-show"
 
 

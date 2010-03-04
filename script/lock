@@ -1,13 +1,3 @@
-# Usage:
-#  % ll lock tick001
-#  % ll lock tick001 8hours
-#  % ll lock tick001 2weeks
-#  % ll lock tick001 3days --from tomorrow
-#  % ll lock tick001 today
-#  % ll lock tick${01..96} today # zsh
-#  % ll lock tick${t} today `seq -s " " -w 1 96` # bash
-
-
 require "app-lock"
 require "app-show"
 
