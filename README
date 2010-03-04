@@ -1,0 +1,98 @@
+ll: A simple, lightweight cluster resource locker
+
+
+1. Basic Usage
+
+The basic usage is very simple. For example, you can lock a node named
+node001 for 1 hour as follows:
+
+% ll lock node001
+node001:
+  2010/03/02 (Tue) 13:59 - 14:59
+
+Of cource, others cannot acquire a new lock while the previous lock is
+alive. This attempt fails with exit -1.
+
+% ll lock node001
+Failed to lock node001
+node001:
+  2010/03/02 (Tue) 13:59 - 14:59
+
+
+2. Advanced Usage
+
+The duration of a lock can be specified with natural time format.
+
+Use node001 today.
+% ll lock node001 today
+
+Use node001 for two weeks.
+% ll lock node001 2weeks
+
+Use node001 three days from the next friday.
+% ll lock node001 3days --from "next friday"
+
+
+3. Multiple Locks
+
+% ll lock node002,node003,node004
+node002:
+  2010/03/02 (Tue) 14:01 - 15:01
+node003:
+  2010/03/02 (Tue) 14:01 - 15:01
+node004:
+  2010/03/02 (Tue) 14:01 - 15:01
+
+If you want to lock a number of nodes, use seq command.
+For example, you can lock from node00 to node96 as follows:
+
+% ll lock `seq --separator="," -f 'node%02g' 0 96`
+
+
+4. Listing Current Locks
+
+`ll show' shows current locks.
+
+% ll show
+node001:
+  2010/03/02 (Tue) 14:17 - 15:17
+  2010/03/05 (Fri) 12:00 - 03/08 (Mon) 12:00
+
+
+5. Unlock
+
+Expired locks are automatically unlocked. If you want to explicitly
+unlock nodes, use `ll unlock' command:
+
+% ll unlock node001
+node001:
+  0) 2010/03/02 (Tue) 14:16 - 15:16
+  1) 2010/03/05 (Fri) 12:00 - 2010/03/08 (Mon) 12:00
+Select (0..1)
+
+When `ll' finds locks with same duration, `ll' prompts if unlock them
+or not.
+
+% ./ll unlock node00
+node00:
+  2010/03/02 (Tue) 14:22 - 15:22
+Unlock? [Y/n]
+node03:
+  2010/03/02 (Tue) 14:22 - 15:22
+node04:
+  2010/03/02 (Tue) 14:22 - 15:22
+node001:
+  2010/03/02 (Tue) 14:17 - 15:17
+node05:
+  2010/03/02 (Tue) 14:22 - 15:22
+node06:
+  2010/03/02 (Tue) 14:22 - 15:22
+node07:
+  2010/03/02 (Tue) 14:22 - 15:22
+node08:
+  2010/03/02 (Tue) 14:22 - 15:22
+node01:
+  2010/03/02 (Tue) 14:22 - 15:22
+node02:
+  2010/03/02 (Tue) 14:22 - 15:22
+Unlock similar locks? [Y/n]
