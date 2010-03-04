@@ -3,7 +3,7 @@ require "rubygems"
 require "app"
 require "chronic_duration"
 require "ll"
-require "locker"
+require "lock-list"
 
 
 #
@@ -22,7 +22,7 @@ class AppLock < App
 
   def parse argv
     @opt.parse!( argv )
-    @locker = Locker.new( @data )
+    @locker = LockList.new( @data )
     @nodes = argv.shift.split( "," )
     @to = determine_duration_end( argv[ 0 ] )
   end
@@ -35,7 +35,7 @@ class AppLock < App
 
 
   def locks_for node
-    @locker.status node
+    @locker.locks node
   end
 
 

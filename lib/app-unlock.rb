@@ -1,4 +1,5 @@
 require "app"
+require "lock-list"
 
 
 #
@@ -10,13 +11,13 @@ class AppUnlock < App
       @data = val
     end
     @opt.parse! argv
-    @locker = Locker.new( @data )
+    @locker = LockList.new( @data )
     @node = argv[ 0 ]
   end
 
 
   def start
-    locks = @locker.status( @node )
+    locks = @locker.locks( @node )
     return if locks.size == 0
     @view.show_with_index @node, locks
     lock = select_a_lock
@@ -30,30 +31,30 @@ class AppUnlock < App
 
 
   def show_similar_locks lock
-    @locker.find_similar_locks( lock ).each do | node |
+    @locker.find_nodes_locked_with( lock ).each do | node |
       @view.show node, [ lock ] if node != @node
     end
   end
 
 
   def remove_similar_locks lock
-    @locker.delete @node, lock
-    unless @locker.find_similar_locks( lock ).empty?
+    @locker.unlock @node, lock
+    unless @locker.find_nodes_locked_with( lock ).empty?
       show_similar_locks lock
       return unless prompt_yesno( "Unlock similar locks? [Y/n]" )
-      @locker.delete_similar_locks( lock )
+      @locker.unlock_all lock
     end
   end
 
 
   def select_a_lock
     id = get_lock_id
-    @locker.status( @node )[ id ] if id
+    @locker.locks( @node )[ id ] if id
   end
 
 
   def get_lock_id
-    locks_size = @locker.status( @node ).size
+    locks_size = @locker.locks( @node ).size
     if locks_size == 1
       0 if prompt_yesno( "Unlock? [Y/n]" )
     else

@@ -1,4 +1,5 @@
 require "ll"
+require "lock"
 
 
 #
@@ -16,21 +17,29 @@ class LockList
   end
 
 
-  def add nodes, lock
-    nodes.each do | each |
-      @list[ each ] += [ lock ]
+  def lock nodes, from, to
+    new_lock = Lock.new( from, to )
+    try_lock nodes, new_lock
+    add nodes, new_lock
+  end
+
+
+  def unlock node, lock
+    @list[ node ].delete_if do | each |
+      each == lock
     end
     save
   end
 
 
-  def delete node, lock
-    @list[ node ] -= [ lock ]
-    save
+  def unlock_all lock
+    nodes.each do | each |
+      unlock each, lock
+    end
   end
 
 
-  def find_similar_locks lock
+  def find_nodes_locked_with lock
     nodes.inject( [] ) do | result, each |
       if @list[ each ].include?( lock )
         result + [ each ]
@@ -41,10 +50,26 @@ class LockList
   end
 
 
-  def delete_similar_locks lock
+  def nodes
+    @list.keys.sort
+  end
+
+
+  def locks node
+    @list[ node ].sort!
+  end
+
+
+  ##############################################################################
+  private
+  ##############################################################################
+
+
+  def add nodes, lock
     nodes.each do | each |
-      delete each, lock
+      @list[ each ] += [ lock ]
     end
+    save
   end
 
 
@@ -55,21 +80,6 @@ class LockList
       end
     end
   end
-
-
-  def nodes
-    @list.keys.sort
-  end
-
-
-  def status node
-    @list[ node ].sort!
-  end
-
-
-  ##############################################################################
-  private
-  ##############################################################################
 
 
   def lockable? node, lock

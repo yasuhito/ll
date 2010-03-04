@@ -1,10 +1,10 @@
 require File.join( File.dirname( __FILE__ ), "spec_helper" )
 
 
-describe Locker do
+describe LockList do
   before :each do
     FileUtils.rm_f "/tmp/ll.dat"
-    @locker = Locker.new( "/tmp/ll.dat" )
+    @locker = LockList.new( "/tmp/ll.dat" )
     @time_now = Time.now
   end
 
@@ -12,22 +12,22 @@ describe Locker do
   context "when attempt to acquire a lock for a node" do
     it "should lock a node today" do
       @locker.lock [ "tick001" ], @time_now, Chronic.parse( "this midnight" )
-      @locker.status( "tick001" ).size.should == 1
-      @locker.status( "tick001" ).first.duration.should < 86400 # 1 day
+      @locker.locks( "tick001" ).size.should == 1
+      @locker.locks( "tick001" ).first.duration.should < 86400 # 1 day
     end
 
 
     it "should lock a node 8 hours" do
       @locker.lock [ "tick001" ], @time_now, @time_now + ChronicDuration.parse( "8 hours" )
-      @locker.status( "tick001" ).size.should == 1
-      @locker.status( "tick001" ).first.duration.should == 28800 # 8 hours
+      @locker.locks( "tick001" ).size.should == 1
+      @locker.locks( "tick001" ).first.duration.should == 28800 # 8 hours
     end
 
 
     it "should lock a node 3 days from tomorrow" do
       @locker.lock [ "tick001" ], Chronic.parse( "tomorrow" ), Chronic.parse( "tomorrow" ) + ChronicDuration.parse( "3 days" )
-      @locker.status( "tick001" ).size.should == 1
-      @locker.status( "tick001" ).first.duration.should == 259200 # 3 days
+      @locker.locks( "tick001" ).size.should == 1
+      @locker.locks( "tick001" ).first.duration.should == 259200 # 3 days
     end
   end
 

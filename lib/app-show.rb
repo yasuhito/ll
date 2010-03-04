@@ -1,5 +1,5 @@
 require "app"
-require "locker"
+require "lock-list"
 
 
 #
@@ -11,7 +11,7 @@ class AppShow < App
       @data = val
     end
     @opt.parse! argv
-    @locker = Locker.new( @data )
+    @locker = LockList.new( @data )
     @argv = argv
   end
 
@@ -29,7 +29,7 @@ class AppShow < App
 
 
   def show node
-    status = @locker.status( node )
+    status = @locker.locks( node )
     return if status.empty?
     @view.show node, status
   end
