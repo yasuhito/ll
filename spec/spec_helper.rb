@@ -7,6 +7,7 @@ require "spec"
 require "chronic"
 require "chronic_duration"
 require "locker"
+require "view"
 
 
 ### Local variables:

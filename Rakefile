@@ -1,5 +1,3 @@
-require "rubygems"
-
 require "rake/tasklib"
 require "cucumber/rake/task"
 require "flay"
@@ -11,26 +9,14 @@ require "roodi"
 require "roodi_task"
 require "spec/rake/spectask"
 require "spec/rake/verify_rcov"
-
-
-def rcov_dat
-  File.join File.dirname( __FILE__ ), "coverage.dat"
-end
-
-
-def rcov_opts
-  [ "--aggregate #{ rcov_dat }", "--exclude /var/lib/gems" ]
-end
+require "metric_fu"
 
 
 task :default => [ :quality, :verify_rcov ]
 
 
-# an alias for Emacs feature-mode.
-task :features => [ :cucumber ]
-
-
-task :quality => [ :reek, :roodi, :flog, :flay ]
+desc "Enforce Ruby code quality with static analysis of code"
+task :quality => [ :reek, :roodi, :flog, :flay, "metrics:all" ]
 
 
 Reek::RakeTask.new do | t |
@@ -72,6 +58,18 @@ FlayTask.new do | t |
 end
 
 
+def rcov_dat
+  File.join File.dirname( __FILE__ ), "coverage.dat"
+end
+
+
+def rcov_opts
+  [ "--aggregate #{ rcov_dat }", "--exclude /var/lib/gems" ]
+end
+
+
+# an alias for Emacs feature-mode.
+task :features => [ :cucumber ]
 Cucumber::Rake::Task.new do | t |
   rm_f rcov_dat
   t.rcov = true
