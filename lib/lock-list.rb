@@ -3,9 +3,9 @@ require "lock"
 
 
 #
-# A lock list manager class.
+# A Locker class
 #
-class LockList
+class Locker
   def initialize data
     @data = data
     if FileTest.exists?( @data )

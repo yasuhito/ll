@@ -11,7 +11,7 @@ class AppShow < App
       @data = val
     end
     @opt.parse! argv
-    @locker = LockList.new( @data )
+    @locker = Locker.new( @data )
     @argv = argv
   end
 

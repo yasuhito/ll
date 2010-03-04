@@ -22,7 +22,7 @@ class AppLock < App
 
   def parse argv
     @opt.parse!( argv )
-    @locker = LockList.new( @data )
+    @locker = Locker.new( @data )
     @nodes = argv.shift.split( "," )
     @to = determine_duration_end( argv[ 0 ] )
   end

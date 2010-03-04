@@ -1,10 +1,10 @@
 require File.join( File.dirname( __FILE__ ), "spec_helper" )
 
 
-describe LockList do
+describe Locker do
   before :each do
     FileUtils.rm_f "/tmp/ll.dat"
-    @locker = LockList.new( "/tmp/ll.dat" )
+    @locker = Locker.new( "/tmp/ll.dat" )
     @time_now = Time.now
   end
 

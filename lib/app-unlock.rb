@@ -11,7 +11,7 @@ class AppUnlock < App
       @data = val
     end
     @opt.parse! argv
-    @locker = LockList.new( @data )
+    @locker = Locker.new( @data )
     @node = argv[ 0 ]
   end
 
