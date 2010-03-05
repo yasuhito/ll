@@ -1,5 +1,6 @@
 require "ll"
 require "lock"
+require "resolv"
 
 
 #
