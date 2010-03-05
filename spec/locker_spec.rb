@@ -4,10 +4,18 @@ require File.join( File.dirname( __FILE__ ), "spec_helper" )
 describe Locker do
   before :each do
     FileUtils.rm_f "/tmp/ll.dat"
-    @locker = Locker.new( "/tmp/ll.dat" )
+    @locker = Locker.new( "/tmp/ll.dat", :no_resolver => true )
     @time_now = Time.now
     @old_lock = Lock.new( Chronic.parse( "2019-05-27 05:00" ), Chronic.parse( "2019-05-27 08:00" ), "yasuhito" )
     @new_lock = Lock.new( Chronic.parse( "2020-05-27 05:00" ), Chronic.parse( "2020-05-27 08:00" ), "yasuhito" )
+  end
+
+
+  it "should raise if failed to resolve nodes' IP address" do
+    @locker = Locker.new( "/tmp/ll.dat" )
+    lambda do
+      @locker.lock "NO_SUCH_NODE", @old_lock
+    end.should raise_error( LL::LockError, "Failed to lock NO_SUCH_NODE: invalid node name" )
   end
 
 

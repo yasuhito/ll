@@ -6,8 +6,9 @@ require "lock"
 # A Locker class
 #
 class Locker
-  def initialize data
+  def initialize data, debug_options = {}
     @data = data
+    @debug_options = debug_options
     if FileTest.exists?( @data )
       @list = Marshal.load( IO.read( @data ) )
     else
@@ -74,10 +75,19 @@ class Locker
 
   def try_lock nodes, lock
     nodes.each do | each |
+      unless valid_nodename?( each )
+        raise LL::LockError, "Failed to lock #{ each }: invalid node name"
+      end
       unless lockable?( each, lock )
         raise LL::LockError, "Failed to lock #{ each }"
       end
     end
+  end
+
+
+  def valid_nodename? node
+    return true if @debug_options[ :no_resolver ]
+    Resolv.getaddress( node ) rescue nil
   end
 
 

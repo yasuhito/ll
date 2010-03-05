@@ -13,8 +13,10 @@ class AppLock < App
   DEFAULT_DURATION = ChronicDuration.parse( "1 hour" )
 
 
-  def initialize messenger = nil
-    super messenger
+  def initialize debug_options = {} # messenger = nil
+    @messenger = debug_options[ :messenger ]
+    @debug_options = debug_options
+    super @messenger
     @from = Time.now
     setup_option_parser
   end
@@ -22,7 +24,7 @@ class AppLock < App
 
   def parse argv
     @opt.parse!( argv )
-    @locker = Locker.new( @data )
+    @locker = Locker.new( @data, @debug_options )
     @nodes = argv.shift.split( "," )
     @to = determine_duration_end( argv[ 0 ] )
   end
