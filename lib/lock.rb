@@ -11,9 +11,10 @@ class Lock
   attr_reader :to
 
 
-  def initialize from, to
+  def initialize from, to, user
     @from = from
     @to = to
+    @user = user
   end
 
 
@@ -43,7 +44,7 @@ class Lock
 
 
   def to_s
-    "#{ from_string } - #{ to_string }"
+    "[#{ @user }] #{ from_string } - #{ to_string }"
   end
 
 

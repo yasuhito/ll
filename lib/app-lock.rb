@@ -30,7 +30,7 @@ class AppLock < App
 
   # [FIXME] global lock
   def start
-    @locker.lock @nodes, @from, @to
+    @locker.lock @nodes, Lock.new( @from, @to, `whoami`.chomp )
   end
 
 

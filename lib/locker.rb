@@ -17,8 +17,7 @@ class Locker
   end
 
 
-  def lock nodes, from, to
-    new_lock = Lock.new( from, to )
+  def lock nodes, new_lock
     try_lock nodes, new_lock
     add nodes, new_lock
   end
