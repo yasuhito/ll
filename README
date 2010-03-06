@@ -1,4 +1,9 @@
-ll: A simple, lightweight cluster resource locker
+ll: A simple, lightweight cluster node locker
+
+
+0. Download and Install
+
+% git clone git://github.com/yasuhito/ll.git
 
 
 1. Basic Usage
@@ -6,17 +11,18 @@ ll: A simple, lightweight cluster resource locker
 The basic usage is very simple. For example, you can lock a node named
 node001 for 1 hour as follows:
 
-% ll lock node001
+ken% ll lock node001
+ken% ll show
 node001:
-  2010/03/02 (Tue) 13:59 - 14:59
+  [ken] 2010/03/02 (Tue) 13:59 - 14:59
 
-Of cource, others cannot acquire a new lock while the previous lock is
-alive. This attempt fails with exit -1.
+Of cource, others cannot acquire a new lock while a previous lock is
+alive. That is, the following attempt fails with exit -1.
 
-% ll lock node001
+akira% ll lock node001
 Failed to lock node001
 node001:
-  2010/03/02 (Tue) 13:59 - 14:59
+  [ken] 2010/03/02 (Tue) 13:59 - 14:59
 
 
 2. Advanced Usage
@@ -33,30 +39,30 @@ Use node001 three days from the next friday.
 % ll lock node001 3days --from "next friday"
 
 
-3. Multiple Locks
+3. Multiple Nodes
 
-% ll lock node002,node003,node004
+ken% ll lock node002,node003,node004
 node002:
-  2010/03/02 (Tue) 14:01 - 15:01
+  [ken] 2010/03/02 (Tue) 14:01 - 15:01
 node003:
-  2010/03/02 (Tue) 14:01 - 15:01
+  [ken] 2010/03/02 (Tue) 14:01 - 15:01
 node004:
-  2010/03/02 (Tue) 14:01 - 15:01
+  [ken] 2010/03/02 (Tue) 14:01 - 15:01
 
 If you want to lock a number of nodes, use seq command.
-For example, you can lock from node00 to node96 as follows:
+For example, you can lock from node000 to node096 as follows:
 
-% ll lock `seq --separator="," -f 'node%02g' 0 96`
+% ll lock `seq --separator="," -f 'node%03g' 0 96`
 
 
 4. Listing Current Locks
 
 `ll show' shows current locks.
 
-% ll show
+ken% ll show
 node001:
-  2010/03/02 (Tue) 14:17 - 15:17
-  2010/03/05 (Fri) 12:00 - 03/08 (Mon) 12:00
+  [ken] 2010/03/02 (Tue) 14:17 - 15:17
+  [akira] 2010/03/05 (Fri) 12:00 - 03/08 (Mon) 12:00
 
 
 5. Unlock
@@ -66,33 +72,33 @@ unlock nodes, use `ll unlock' command:
 
 % ll unlock node001
 node001:
-  0) 2010/03/02 (Tue) 14:16 - 15:16
-  1) 2010/03/05 (Fri) 12:00 - 2010/03/08 (Mon) 12:00
+  0) [ken] 2010/03/02 (Tue) 14:16 - 15:16
+  1) [akira] 2010/03/05 (Fri) 12:00 - 2010/03/08 (Mon) 12:00
 Select (0..1)
 
-When `ll' finds locks with same duration, `ll' prompts if unlock them
-or not.
+When `ll unlock' finds locks with the same duration, `ll unlock'
+prompts if unlock them or not.
 
-% ./ll unlock node00
+ken% ./ll unlock node00
 node00:
-  2010/03/02 (Tue) 14:22 - 15:22
+  [ken] 2010/03/02 (Tue) 14:22 - 15:22
 Unlock? [Y/n]
 node03:
-  2010/03/02 (Tue) 14:22 - 15:22
+  [ken] 2010/03/02 (Tue) 14:22 - 15:22
 node04:
-  2010/03/02 (Tue) 14:22 - 15:22
+  [ken] 2010/03/02 (Tue) 14:22 - 15:22
 node001:
-  2010/03/02 (Tue) 14:17 - 15:17
+  [ken] 2010/03/02 (Tue) 14:17 - 15:17
 node05:
-  2010/03/02 (Tue) 14:22 - 15:22
+  [ken] 2010/03/02 (Tue) 14:22 - 15:22
 node06:
-  2010/03/02 (Tue) 14:22 - 15:22
+  [ken] 2010/03/02 (Tue) 14:22 - 15:22
 node07:
-  2010/03/02 (Tue) 14:22 - 15:22
+  [ken] 2010/03/02 (Tue) 14:22 - 15:22
 node08:
-  2010/03/02 (Tue) 14:22 - 15:22
+  [ken] 2010/03/02 (Tue) 14:22 - 15:22
 node01:
-  2010/03/02 (Tue) 14:22 - 15:22
+  [ken] 2010/03/02 (Tue) 14:22 - 15:22
 node02:
-  2010/03/02 (Tue) 14:22 - 15:22
+  [ken] 2010/03/02 (Tue) 14:22 - 15:22
 Unlock similar locks? [Y/n]
