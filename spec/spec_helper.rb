@@ -2,12 +2,13 @@ $LOAD_PATH << File.join( File.dirname( __FILE__ ), "/../lib" )
 
 
 require "rubygems"
-require "spec"
 
+require "active_support"
 require "chronic"
 require "chronic_duration"
 require "lock"
 require "locker"
+require "spec"
 require "view"
 
 
