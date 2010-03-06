@@ -9,14 +9,13 @@ require "roodi"
 require "roodi_task"
 require "spec/rake/spectask"
 require "spec/rake/verify_rcov"
-require "metric_fu"
 
 
 task :default => [ :quality, :verify_rcov ]
 
 
 desc "Enforce Ruby code quality with static analysis of code"
-task :quality => [ :reek, :roodi, :flog, :flay, "metrics:all" ]
+task :quality => [ :reek, :roodi, :flog, :flay ]
 
 
 Reek::RakeTask.new do | t |
