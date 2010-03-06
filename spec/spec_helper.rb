@@ -4,6 +4,7 @@ $LOAD_PATH << File.join( File.dirname( __FILE__ ), "/../lib" )
 require "rubygems"
 
 require "active_support"
+require "app-show"
 require "chronic"
 require "chronic_duration"
 require "lock"

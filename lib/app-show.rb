@@ -6,7 +6,7 @@ require "locker"
 # Displays lock status.
 #
 class AppShow < App
-  def parse argv
+  def parse argv = []
     @opt.on( "--data [FILE]" ) do | val |
       @data = val
     end

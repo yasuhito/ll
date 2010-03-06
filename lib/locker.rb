@@ -8,8 +8,8 @@ require "resolv"
 #
 class Locker
   def initialize data, debug_options = {}
-    @data = data
     @debug_options = debug_options
+    @data = data
     if FileTest.exists?( @data )
       @list = Marshal.load( IO.read( @data ) )
     else

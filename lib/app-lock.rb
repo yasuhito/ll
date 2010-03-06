@@ -13,7 +13,7 @@ class AppLock < App
   DEFAULT_DURATION = ChronicDuration.parse( "1 hour" )
 
 
-  def initialize debug_options = {} # messenger = nil
+  def initialize debug_options = {}
     @messenger = debug_options[ :messenger ]
     @debug_options = debug_options
     super @messenger
