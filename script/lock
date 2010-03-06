@@ -13,7 +13,6 @@ begin
   app = AppLock.new
   app.parse ARGV.dup
   app.start
-  show
 rescue LL::LockError, LL::ParseError
   $stderr.puts $!.message
   show

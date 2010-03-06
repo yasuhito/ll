@@ -13,12 +13,12 @@ begin
   app = AppUnlock.new
   app.parse ARGV.dup
   app.start
-  show
 rescue
   $stderr.puts $!.message
   $!.backtrace.each do | each |
     $stderr.puts each
   end
+  exit -1
 end
 
 
