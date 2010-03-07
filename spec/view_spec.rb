@@ -8,11 +8,12 @@ describe View do
     @lock_yutaro = Lock.new( Chronic.parse( "1979-01-31 23:00" ),
                              Chronic.parse( "1979-02-1 01:00" ), "yutaro" )
     @messenger = StringIO.new
+    @view = View.new( @messenger )
   end
 
 
   it "should show locks" do
-    View.new( @messenger ).show "tick001", [ @lock_yasuhito, @lock_yutaro ]
+    @view.show "tick001", [ @lock_yasuhito, @lock_yutaro ]
     @messenger.string.should == <<-EOF
 tick001:
   [yasuhito] 1979/05/27 (Sun) 05:00 - 06:00
@@ -22,7 +23,7 @@ EOF
 
 
   it "should show locks with index" do
-    View.new( @messenger ).show_with_index "tick001", [ @lock_yasuhito, @lock_yutaro ]
+    @view.show_with_index "tick001", [ @lock_yasuhito, @lock_yutaro ]
     @messenger.string.should == <<-EOF
 tick001:
   0) [yasuhito] 1979/05/27 (Sun) 05:00 - 06:00
