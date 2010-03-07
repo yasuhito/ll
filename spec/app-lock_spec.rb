@@ -13,6 +13,7 @@ describe AppLock do
     it "should lock for 1 hour as default" do
       @app.parse [ "--data", @data, "node001" ]
       @app.start
+      @app.locks_for( "node001" ).size.should == 1
       @app.locks_for( "node001" ).first.duration.should == 1.hour
     end
 
@@ -20,6 +21,7 @@ describe AppLock do
     it "should lock today" do
       @app.parse [ "--data", @data, "node001", "today" ]
       @app.start
+      @app.locks_for( "node001" ).size.should == 1
       @app.locks_for( "node001" ).first.to.should == Chronic.parse( "this midnight" )
     end
 
@@ -27,6 +29,9 @@ describe AppLock do
     it "should lock with --from option" do
       @app.parse [ "--data", @data, "node001", "2hours", "--from", "tomorrow" ]
       @app.start
+      @app.locks_for( "node001" ).size.should == 1
+      @app.locks_for( "node001" ).first.from.should == Chronic.parse( "tomorrow" )
+      @app.locks_for( "node001" ).first.to.should == Chronic.parse( "tomorrow" ) + 2.hours
       @app.locks_for( "node001" ).first.duration.should == 2.hours
     end
   end
