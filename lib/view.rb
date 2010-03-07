@@ -20,9 +20,36 @@ class View
   end
 
 
+  def prompt_select message
+    print message
+    case id = $stdin.gets.chomp
+    when /\A\d+\Z/
+      id.to_i
+    else
+      nil
+    end
+  end
+
+
+  def prompt_yesno message
+    print message
+    case $stdin.gets.chomp.downcase
+    when "y", ""
+      true
+    else
+      nil
+    end
+  end
+
+
   ##############################################################################
   private
   ##############################################################################
+
+
+  def print message
+    ( @messenger || $stdout ).print message
+  end
 
 
   def info message

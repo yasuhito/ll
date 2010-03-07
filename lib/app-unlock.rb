@@ -7,21 +7,24 @@ require "locker"
 #
 class AppUnlock < App
   def parse argv
+    @opt.on( "--yes" ) do
+      @yes = true
+    end
     @opt.on( "--data [FILE]" ) do | val |
       @data = val
     end
     @opt.parse! argv
-    @locker = Locker.new( @data )
-    @node = argv[ 0 ]
+    @nodes = argv[ 0 ].split( "," )
   end
 
 
   def start
-    locks = @locker.locks( @node )
-    return if locks.size == 0
-    @view.show_with_index @node, locks
-    lock = select_a_lock
-    remove_similar_locks lock if lock
+    @locker = Locker.new( @data )
+    if @nodes.size == 1
+      node = @nodes.first
+      show_locks node
+      unlock node
+    end
   end
 
 
@@ -30,57 +33,49 @@ class AppUnlock < App
   ##############################################################################
 
 
+  def show_locks node
+    @locks = @locker.locks( node )
+    return if @locks.size == 0
+    @view.show_with_index node, @locks
+  end
+
+
+  def unlock node
+    lock = select_a_lock( node )
+    return unless lock
+    @locker.unlock node, lock
+    remove_similar_locks lock
+  end
+
+
   def show_similar_locks lock
     @locker.find_nodes_locked_with( lock ).each do | node |
-      @view.show node, [ lock ] if node != @node
+      @view.show node, [ lock ] if node != @nodes[ 0 ]
     end
   end
 
 
   def remove_similar_locks lock
-    @locker.unlock @node, lock
     unless @locker.find_nodes_locked_with( lock ).empty?
       show_similar_locks lock
-      return unless prompt_yesno( "Unlock similar locks? [Y/n]" )
+      return unless @yes || @view.prompt_yesno( "Unlock similar locks? [Y/n]" )
       @locker.unlock_all lock
     end
   end
 
 
-  def select_a_lock
-    id = get_lock_id
-    @locker.locks( @node )[ id ] if id
+  def select_a_lock node
+    id = @yes ? 0 : get_lock_id
+    @locks[ id ] if id
   end
 
 
   def get_lock_id
-    locks_size = @locker.locks( @node ).size
+    locks_size = @locks.size
     if locks_size == 1
-      0 if prompt_yesno( "Unlock? [Y/n]" )
+      0 if @view.prompt_yesno( "Unlock? [Y/n]" )
     else
-      prompt_select "Select [0..#{ locks_size - 1 }]"
-    end
-  end
-
-
-  def prompt_select message
-    print message
-    case id = $stdin.gets.chomp
-    when /\A\d+\Z/
-      id.to_i
-    else
-      nil
-    end
-  end
-
-
-  def prompt_yesno message
-    print message
-    case $stdin.gets.chomp.downcase
-    when "y", ""
-      true
-    else
-      nil
+      @view.prompt_select "Select [0..#{ locks_size - 1 }]"
     end
   end
 end
