@@ -57,7 +57,7 @@ class Locker
 
 
   def locks node
-    @list[ node ].sort!
+    @list[ node ] #.sort!
   end
 
 

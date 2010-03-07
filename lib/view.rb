@@ -6,7 +6,7 @@ class View
 
   def show node, locks
     info "#{ node }:"
-    locks.each do | each |
+    locks.sort.each do | each |
       info "  #{ each }"
     end
   end
@@ -14,7 +14,7 @@ class View
 
   def show_with_index node, locks
     info "#{ node }:"
-    locks.each_with_index do | each, idx |
+    locks.sort.each_with_index do | each, idx |
       info "  #{ idx }) #{ each }"
     end
   end

@@ -16,8 +16,8 @@ describe View do
     @view.show "tick001", [ @lock_yasuhito, @lock_yutaro ]
     @messenger.string.should == <<-EOF
 tick001:
-  [yasuhito] 1979/05/27 (Sun) 05:00 - 06:00
   [yutaro] 1979/01/31 (Wed) 23:00 - 02/01 (Thu) 01:00
+  [yasuhito] 1979/05/27 (Sun) 05:00 - 06:00
 EOF
   end
 
@@ -26,8 +26,8 @@ EOF
     @view.show_with_index "tick001", [ @lock_yasuhito, @lock_yutaro ]
     @messenger.string.should == <<-EOF
 tick001:
-  0) [yasuhito] 1979/05/27 (Sun) 05:00 - 06:00
-  1) [yutaro] 1979/01/31 (Wed) 23:00 - 02/01 (Thu) 01:00
+  0) [yutaro] 1979/01/31 (Wed) 23:00 - 02/01 (Thu) 01:00
+  1) [yasuhito] 1979/05/27 (Sun) 05:00 - 06:00
 EOF
   end
 end
