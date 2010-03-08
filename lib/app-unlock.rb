@@ -21,46 +21,9 @@ class AppUnlock < App
   def start
     @locker = Locker.new( @data )
     if @nodes.size == 1
-      node = @nodes.first
-      locks = @locker.locks( node )
-      if @yes
-        locks.each do | each |
-          @locker.unlock node, each
-          remove_similar_locks each
-        end
-      else
-        show_locks node, locks unless @yes
-        id = select_a_lock( node, locks )
-        return unless id
-        lock = locks[ id ]
-        return unless lock
-        @locker.unlock node, lock
-        remove_similar_locks lock
-      end
+      maybe_unlock_one_node
     else
-      locks = get_common_locks
-      if @yes
-        @nodes.each do | node |
-          @locker.unlock node, locks[ 0 ]
-        end
-      else
-        if locks.size == 1
-          @nodes.each do | each |
-            @view.show each, locks
-          end
-          if @view.prompt_yesno( "Unlock? [Y/n]" )
-            @nodes.each do | node |
-              locks.each do | lock |
-                @locker.unlock node, lock
-              end
-            end
-          end
-        else
-          @view.show_with_index @nodes, locks
-          id = @view.prompt_select( "Select [0..#{ locks.size - 1 }] (default = 0):" )
-          @locker.unlock_all locks[ id ]
-        end
-      end
+      maybe_unlock_multiple_nodes
     end
   end
 
@@ -68,6 +31,53 @@ class AppUnlock < App
   ##############################################################################
   private
   ##############################################################################
+
+
+  def maybe_unlock_one_node
+    node = @nodes.first
+    locks = @locker.locks( node )
+    if @yes
+      locks.each do | each |
+        @locker.unlock node, each
+        remove_similar_locks each
+      end
+    else
+      show_locks node, locks
+      lock = select_a_lock_to_release( locks )
+      return unless lock
+      @locker.unlock node, lock
+      remove_similar_locks lock
+    end
+  end
+
+
+  def maybe_unlock_multiple_nodes
+    locks = get_common_locks
+    unless @yes
+      @view.show_with_index @nodes, locks
+    end
+
+    if locks.size == 1
+      lock = locks.first
+      if @yes || @view.prompt_yesno( "Unlock? [Y/n]" )
+        release lock
+      end
+    else
+      lock = unless @yes
+               @view.prompt_select_from( locks )
+             else
+               locks.first
+             end
+      release lock
+    end
+  end
+
+
+  def release lock
+    @nodes.each do | each |
+      @locker.unlock each, lock
+    end
+  end
 
 
   def get_common_locks
@@ -83,21 +93,21 @@ class AppUnlock < App
   end
 
 
-  def select_a_lock node, locks
+  def select_a_lock_to_release locks
     if @yes
-      0
+      locks.first
     else
-      get_lock_id locks
+      select_from locks
     end
   end
 
 
-  def get_lock_id locks
+  def select_from locks
     locks_size = locks.size
     if locks_size == 1
-      0 if @view.prompt_yesno( "Unlock? [Y/n]" )
+      locks.first if @view.prompt_yesno( "Unlock? [Y/n]" )
     else
-      @view.prompt_select "Select [0..#{ locks_size - 1 }] (default = 0):"
+      @view.prompt_select_from locks
     end
   end
 

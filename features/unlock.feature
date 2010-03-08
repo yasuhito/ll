@@ -24,12 +24,8 @@
     もし ll unlock "tick001,tick002,tick003" でアンロックした
     ならば 次の出力を得る:
     """
-    tick001:
-      [yasuhito] 2020/01/01 (Wed) 12:00 - 13:00
-    tick002:
-      [yasuhito] 2020/01/01 (Wed) 12:00 - 13:00
-    tick003:
-      [yasuhito] 2020/01/01 (Wed) 12:00 - 13:00
+    tick001, tick002, tick003:
+      0) [yasuhito] 2020/01/01 (Wed) 12:00 - 13:00
     Unlock? [Y/n]
     """
     もし ロックを表示した
@@ -64,10 +60,8 @@
     もし ll unlock "tick001,tick002" でアンロックした
     ならば 次の出力を得る:
     """
-    tick001:
-      [yasuhito] 2020/01/01 (Wed) 12:00 - 13:00
-    tick002:
-      [yasuhito] 2020/01/01 (Wed) 12:00 - 13:00
+    tick001, tick002:
+      0) [yasuhito] 2020/01/01 (Wed) 12:00 - 13:00
     Unlock? [Y/n]
     """
     もし ロックを表示した

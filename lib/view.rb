@@ -21,13 +21,13 @@ class View
   end
 
 
-  def prompt_select message
-    print message
+  def prompt_select_from locks
+    print "Select [0..#{ locks.size - 1 }] (default = 0):"
     case id = stdin.gets.chomp
     when /\A\d+\Z/
-      id.to_i
+      locks[ id.to_i ]
     else
-      0
+      locks.first
     end
   end
 
