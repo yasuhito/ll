@@ -5,6 +5,7 @@ require "rubygems"
 
 require "app-lock"
 require "app-show"
+require "app-unlock"
 require "chronic"
 
 

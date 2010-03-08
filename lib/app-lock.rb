@@ -16,7 +16,7 @@ class AppLock < App
   def initialize debug_options = {}
     @messenger = debug_options[ :messenger ]
     @debug_options = debug_options
-    super @messenger
+    super @debug_options
     @from = Time.now
     setup_option_parser
   end

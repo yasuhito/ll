@@ -1,9 +1,19 @@
 # -*- coding: utf-8 -*-
 When /^ロックを表示した$/ do
   @messenger = StringIO.new
-  @app = AppShow.new( @messenger )
+  @app = AppShow.new( :messenger => @messenger )
   @app.parse [ "--data", @data ]
   @app.start
+end
+
+
+Then /^何も表示されない$/ do
+  @messenger.string.should be_empty
+end
+
+
+Then /^現在のロックは無し$/ do
+  @messenger.string.should be_empty
 end
 
 

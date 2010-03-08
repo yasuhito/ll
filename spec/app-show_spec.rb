@@ -6,7 +6,7 @@ describe AppShow do
     @data = "/tmp/ll.dat"
     FileUtils.rm_f @data
     @messenger = StringIO.new
-    @app = AppShow.new( @messenger )
+    @app = AppShow.new( :messenger => @messenger )
     @app.parse [ "--data", @data ]
   end
 

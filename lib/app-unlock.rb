@@ -41,9 +41,24 @@ class AppUnlock < App
       locks = get_common_locks
       if @yes
         @nodes.each do | node |
-          locks.each do | lock |
-            @locker.unlock node, lock
+          @locker.unlock node, locks[ 0 ]
+        end
+      else
+        if locks.size == 1
+          @nodes.each do | each |
+            @view.show each, locks
           end
+          if @view.prompt_yesno( "Unlock? [Y/n]" )
+            @nodes.each do | node |
+              locks.each do | lock |
+                @locker.unlock node, lock
+              end
+            end
+          end
+        else
+          @view.show_with_index @nodes, locks
+          id = @view.prompt_select( "Select [0..#{ locks.size - 1 }] (default = 0):" )
+          @locker.unlock_all locks[ id ]
         end
       end
     end
@@ -64,7 +79,7 @@ class AppUnlock < App
 
   def show_locks node, locks
     return if locks.size == 0
-    @view.show_with_index node, locks
+    @view.show_with_index [ node ], locks
   end
 
 
@@ -82,7 +97,7 @@ class AppUnlock < App
     if locks_size == 1
       0 if @view.prompt_yesno( "Unlock? [Y/n]" )
     else
-      @view.prompt_select "Select [0..#{ locks_size - 1 }]"
+      @view.prompt_select "Select [0..#{ locks_size - 1 }] (default = 0):"
     end
   end
 

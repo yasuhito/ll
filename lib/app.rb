@@ -9,9 +9,9 @@ class App
   DEFAULT_DATA = File.join( File.dirname( __FILE__ ), "..", "ll.dat" )
 
 
-  def initialize messenger = nil
+  def initialize debug_options = {}
     @data = DEFAULT_DATA
-    @view = View.new( messenger )
+    @view = View.new( debug_options )
     @opt = OptionParser.new
   end
 end

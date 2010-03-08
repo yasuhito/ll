@@ -1,6 +1,7 @@
 class View
-  def initialize messenger
-    @messenger = messenger
+  def initialize debug_options
+    @stdin = debug_options[ :stdin ]
+    @messenger = debug_options[ :messenger ]
   end
 
 
@@ -12,8 +13,8 @@ class View
   end
 
 
-  def show_with_index node, locks
-    info "#{ node }:"
+  def show_with_index nodes, locks
+    info "#{ nodes.join ', ' }:"
     locks.sort.each_with_index do | each, idx |
       info "  #{ idx }) #{ each }"
     end
@@ -22,18 +23,18 @@ class View
 
   def prompt_select message
     print message
-    case id = $stdin.gets.chomp
+    case id = stdin.gets.chomp
     when /\A\d+\Z/
       id.to_i
     else
-      nil
+      0
     end
   end
 
 
   def prompt_yesno message
     print message
-    case $stdin.gets.chomp.downcase
+    case stdin.gets.chomp.downcase
     when "y", ""
       true
     else
@@ -45,6 +46,11 @@ class View
   ##############################################################################
   private
   ##############################################################################
+
+
+  def stdin
+    @stdin || $stdin
+  end
 
 
   def print message
