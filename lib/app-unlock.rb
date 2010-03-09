@@ -19,10 +19,9 @@ class AppUnlock < App
 
 
   def start
-    @view = View.new( @debug_options.merge :quiet => @yes )
-    @locker = Locker.new( @data )
+    setup
     if @nodes.size == 1
-      maybe_unlock_one_node
+      maybe_unlock_one_node @nodes.first
     else
       maybe_unlock_multiple_nodes
     end
@@ -34,10 +33,15 @@ class AppUnlock < App
   ##############################################################################
 
 
-  def maybe_unlock_one_node
-    node = @nodes.first
+  def setup
+    @view = View.new( @debug_options.merge :quiet => @yes )
+    @locker = Locker.new( @data )
+  end
+
+
+  def maybe_unlock_one_node node
     locks = @locker.locks( node )
-    show_locks_with_index @nodes, locks
+    show_locks_with_index [ node ], locks
     if @yes
       locks.each do | each |
         release_all node, each 
