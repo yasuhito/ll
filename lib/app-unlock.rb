@@ -36,40 +36,35 @@ class AppUnlock < App
   def maybe_unlock_one_node
     node = @nodes.first
     locks = @locker.locks( node )
+    show_locks_with_index @nodes, locks
     if @yes
       locks.each do | each |
-        @locker.unlock node, each
-        remove_similar_locks each
+        release_all node, each 
       end
     else
-      show_locks node, locks
-      lock = select_a_lock_to_release( locks )
-      return unless lock
-      @locker.unlock node, lock
-      remove_similar_locks lock
+      release_all node, select_from( locks )
     end
   end
 
 
   def maybe_unlock_multiple_nodes
     locks = get_common_locks
-    unless @yes
-      @view.show_with_index @nodes, locks
-    end
+    show_locks_with_index @nodes, locks
+    release select_from( locks )
+  end
 
-    if locks.size == 1
-      lock = locks.first
-      if @yes || @view.prompt_yesno( "Unlock? [Y/n]" )
-        release lock
-      end
-    else
-      lock = unless @yes
-               @view.prompt_select_from( locks )
-             else
-               locks.first
-             end
-      release lock
-    end
+
+  def show_locks_with_index nodes, locks
+    return if @yes
+    @view.show_locks_with_index nodes, locks
+  end
+
+
+  def select_from locks
+    default_lock = locks.first
+    return default_lock if @yes
+    return default_lock if locks.size == 1 && @view.prompt_yesno( "Unlock? [Y/n]" )
+    @view.prompt_select_from locks
   end
 
 
@@ -80,6 +75,12 @@ class AppUnlock < App
   end
 
 
+  def release_all node, lock
+    @locker.unlock node, lock
+    unlock_similar_locks lock
+  end
+
+
   def get_common_locks
     @nodes.inject( @locker.locks( @nodes.first ) ) do | result, each |
       result & @locker.locks( each )
@@ -87,46 +88,21 @@ class AppUnlock < App
   end
 
 
-  def show_locks node, locks
-    return if locks.size == 0
-    @view.show_with_index [ node ], locks
-  end
-
-
-  def select_a_lock_to_release locks
-    if @yes
-      locks.first
-    else
-      select_from locks
-    end
-  end
-
-
-  def select_from locks
-    locks_size = locks.size
-    if locks_size == 1
-      locks.first if @view.prompt_yesno( "Unlock? [Y/n]" )
-    else
-      @view.prompt_select_from locks
-    end
-  end
-
-
-  def remove_similar_locks lock
+  def unlock_similar_locks lock
     unless @locker.find_nodes_locked_with( lock ).empty?
-      show_similar_locks lock
-      if @yes || @view.prompt_yesno( "Unlock similar locks? [Y/n]" )
+      if prompt_unlock_similar_locks lock
         @locker.unlock_all lock
       end
     end
   end
 
 
-  def show_similar_locks lock
-    return if @yes
+  def prompt_unlock_similar_locks lock
+    return true if @yes
     @locker.find_nodes_locked_with( lock ).each do | node |
       @view.show node, [ lock ]
     end
+    @view.prompt_yesno( "Unlock similar locks? [Y/n]" )
   end
 end
 

@@ -23,7 +23,7 @@ EOF
 
 
   it "should show locks with index" do
-    @view.show_with_index [ "tick001" ], [ @lock_yasuhito, @lock_yutaro ]
+    @view.show_locks_with_index [ "tick001" ], [ @lock_yasuhito, @lock_yutaro ]
     @messenger.string.should == <<-EOF
 tick001:
   0) [yutaro] 1979/01/31 (Wed) 23:00 - 02/01 (Thu) 01:00

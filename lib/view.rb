@@ -13,7 +13,7 @@ class View
   end
 
 
-  def show_with_index nodes, locks
+  def show_locks_with_index nodes, locks
     info "#{ nodes.join ', ' }:"
     locks.sort.each_with_index do | each, idx |
       info "  #{ idx }) #{ each }"
