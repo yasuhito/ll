@@ -31,12 +31,8 @@ class View
   def prompt_yesno message
     return true if @quiet
     print message
-    case read_from_stdin.downcase
-    when "y", ""
-      true
-    else
-      nil
-    end
+    input = read_from_stdin.downcase
+    input == "y" || input == ""
   end
 
 

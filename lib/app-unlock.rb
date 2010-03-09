@@ -41,7 +41,7 @@ class AppUnlock < App
 
   def maybe_unlock_one_node node
     locks = @locker.locks( node )
-    show_locks_with_index [ node ], locks
+    @view.show_locks_with_index [ node ], locks
     if @yes
       locks.each do | each |
         release_all node, each 
@@ -54,13 +54,8 @@ class AppUnlock < App
 
   def maybe_unlock_multiple_nodes
     locks = get_common_locks
-    show_locks_with_index @nodes, locks
+    @view.show_locks_with_index @nodes, locks
     release select_from( locks )
-  end
-
-
-  def show_locks_with_index nodes, locks
-    @view.show_locks_with_index nodes, locks
   end
 
 
