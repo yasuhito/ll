@@ -1,5 +1,6 @@
 class View
   def initialize debug_options
+    @quiet = debug_options[ :quiet ]
     @stdin = debug_options[ :stdin ]
     @messenger = debug_options[ :messenger ]
   end
@@ -23,18 +24,14 @@ class View
 
   def prompt_select_from locks
     print "Select [0..#{ locks.size - 1 }] (default = 0):"
-    case id = stdin.gets.chomp
-    when /\A\d+\Z/
-      locks[ id.to_i ]
-    else
-      locks.first
-    end
+    read_from_stdin.to_i
   end
 
 
   def prompt_yesno message
+    return true if @quiet
     print message
-    case stdin.gets.chomp.downcase
+    case read_from_stdin.downcase
     when "y", ""
       true
     else
@@ -48,8 +45,8 @@ class View
   ##############################################################################
 
 
-  def stdin
-    @stdin || $stdin
+  def read_from_stdin
+    ( @stdin || $stdin ).gets.chomp
   end
 
 
@@ -59,6 +56,7 @@ class View
 
 
   def info message
+    return if @quiet
     ( @messenger || $stdout ).puts message
   end
 end

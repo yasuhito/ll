@@ -10,8 +10,8 @@ class App
 
 
   def initialize debug_options = {}
+    @debug_options = debug_options
     @data = DEFAULT_DATA
-    @view = View.new( debug_options )
     @opt = OptionParser.new
   end
 end

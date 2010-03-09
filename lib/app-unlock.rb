@@ -19,6 +19,7 @@ class AppUnlock < App
 
 
   def start
+    @view = View.new( @debug_options.merge :quiet => @yes )
     @locker = Locker.new( @data )
     if @nodes.size == 1
       maybe_unlock_one_node
@@ -55,7 +56,6 @@ class AppUnlock < App
 
 
   def show_locks_with_index nodes, locks
-    return if @yes
     @view.show_locks_with_index nodes, locks
   end
 
@@ -64,7 +64,8 @@ class AppUnlock < App
     default_lock = locks.first
     return default_lock if @yes
     return default_lock if locks.size == 1 && @view.prompt_yesno( "Unlock? [Y/n]" )
-    @view.prompt_select_from locks
+    id = @view.prompt_select_from( locks )
+    locks[ id ]
   end
 
 
@@ -98,7 +99,6 @@ class AppUnlock < App
 
 
   def prompt_unlock_similar_locks lock
-    return true if @yes
     @locker.find_nodes_locked_with( lock ).each do | node |
       @view.show node, [ lock ]
     end
