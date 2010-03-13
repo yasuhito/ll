@@ -9,10 +9,25 @@ Spec::Matchers.define :overwrap_with do | duration |
 end
 
 
+describe Lock, "with 1 hour of duration from now" do
+  context "when testing its liveness" do
+    now = Time.now
+    subject { Lock.new( now, now + ChronicDuration.parse( "1 hour" ), "yutaro" ) }
+    it { should_not be_obsolete }
+  end
+end
+
+
 describe Lock, "1979-05-27 (Sun) 04:00 - 06:00" do
   before :each do
     @user = "yutaro"
     @lock = Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), @user )
+  end
+
+
+  context "when testing its liveness" do
+    subject { @lock }
+    it { should be_obsolete }
   end
 
 
@@ -42,7 +57,6 @@ end
 
 describe Lock do
   before :each do
-    @one_hour = ChronicDuration.parse( "1 hour" )
     @user = "yutaro"
   end
 
@@ -54,22 +68,6 @@ describe Lock do
     ( lock_old <=> lock_old ).should == 0
     ( lock_new <=> lock_new ).should == 0
     ( lock_new <=> lock_old ).should == 1
-  end
-
-
-  context "when testing its liveness" do
-    context "when it is expired" do
-      past = Chronic.parse( "1979-05-27 05:00" )
-      subject { Lock.new( past - @one_hour, past, @user ) }
-      it { should be_obsolete }
-    end
-
-
-    context "when it is alive" do
-      now = Time.now
-      subject { Lock.new( now, now + @one_hour, @user ) }
-      it { should_not be_obsolete }
-    end
   end
 
 
