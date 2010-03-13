@@ -74,25 +74,25 @@ end
 
 describe Lock, "when represented as a string" do
   context "when its duration falls within a day" do
-    subject { new_lock( :from => "1979-05-27 05:00", :to => "1979-05-27 06:00" ) }
+    subject { new_lock( :from => "1979-05-27 05:00", :to => "1979-05-27 06:00", :user => "yutaro" ) }
     it { should be_shortened_into( "[yutaro] 1979/05/27 (Sun) 05:00 - 06:00" ) }
   end
 
 
   context "when its duration crosses 00:00" do
-    subject { new_lock( :from => "1979-05-27 23:00", :to => "1979-05-28 01:00" ) }
+    subject { new_lock( :from => "1979-05-27 23:00", :to => "1979-05-28 01:00", :user => "yutaro" ) }
     it { should be_shortened_into( "[yutaro] 1979/05/27 (Sun) 23:00 - 05/28 (Mon) 01:00" ) }
   end
 
 
   context "when its duration crosses the last day of a month" do
-    subject { new_lock( :from => "1979-01-31 23:00", :to => "1979-02-1 01:00" ) }
+    subject { new_lock( :from => "1979-01-31 23:00", :to => "1979-02-1 01:00", :user => "yutaro" ) }
     it { should be_shortened_into( "[yutaro] 1979/01/31 (Wed) 23:00 - 02/01 (Thu) 01:00" ) }
   end
 
 
   context "when its duration crosses a new year's day" do
-    subject { new_lock( :from => "1978-12-31 23:00", :to => "1979-01-01 01:00" ) }
+    subject { new_lock( :from => "1978-12-31 23:00", :to => "1979-01-01 01:00", :user => "yutaro" ) }
     it { should be_shortened_into( "[yutaro] 1978/12/31 (Sun) 23:00 - 1979/01/01 (Mon) 01:00" ) }
   end
 end

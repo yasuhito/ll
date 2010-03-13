@@ -16,7 +16,8 @@ require "view"
 
 
 def new_lock duration
-  Lock.new( Chronic.parse( duration[ :from ] ), Chronic.parse( duration[ :to ] ), "yutaro" )
+  user = duration[ :user ] || "yasuhito"
+  Lock.new( Chronic.parse( duration[ :from ] ), Chronic.parse( duration[ :to ] ), user )
 end
 
 
