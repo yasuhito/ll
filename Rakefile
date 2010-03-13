@@ -9,6 +9,7 @@ require "roodi"
 require "roodi_task"
 require "spec/rake/spectask"
 require "spec/rake/verify_rcov"
+require "hanna/rdoctask"
 
 
 task :default => [ :quality, :verify_rcov ]
@@ -88,6 +89,13 @@ end
 task :verify_rcov => [ "spec", "cucumber" ]
 RCov::VerifyTask.new do | t |
   t.threshold = 100.00
+end
+
+
+# Rdoc Task ####################################################################
+
+Rake::RDocTask.new do | t |
+  t.rdoc_files.include "lib/**/*.rb"
 end
 
 
