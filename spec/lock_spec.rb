@@ -8,6 +8,13 @@ describe Lock do
   end
 
 
+  context "when calculating its duration" do
+    from = Chronic.parse( "1979-05-27 05:00" )
+    subject { Lock.new( from, from + @one_hour, @user ) }
+    its( :duration ) { should == @one_hour }
+  end
+
+
   context "when compared with an another lock" do
     before :each do
       @from = Chronic.parse( "1979-05-27 05:00" )
