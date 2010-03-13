@@ -3,8 +3,7 @@ require File.join( File.dirname( __FILE__ ), "spec_helper" )
 
 Spec::Matchers.define :overwrap_with do | duration |
   match do | lock |
-    other = Lock.new( Chronic.parse( duration[ :from ] ), Chronic.parse( duration[ :to ] ), "yutaro" )
-    lock.overwrap_with other
+    lock.overwrap_with new_lock( duration )
   end
 end
 
@@ -27,8 +26,7 @@ end
 
 describe Lock, "1979-05-27 (Sun) 04:00 - 06:00" do
   before :each do
-    @user = "yutaro"
-    @lock = Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), @user )
+    @lock = new_lock( :from => "1979-05-27 04:00", :to => "1979-05-27 06:00" )
   end
 
 
@@ -56,16 +54,16 @@ describe Lock, "1979-05-27 (Sun) 04:00 - 06:00" do
 
   context "when compared with an another lock" do
     subject { @lock }
-    it { should == Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), @user ) }
-    it { should_not == Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 06:00" ), @user ) }
+    it { should == new_lock( :from => "1979-05-27 04:00", :to => "1979-05-27 06:00" ) }
+    it { should_not == new_lock( :from => "1979-05-27 05:00", :to => "1979-05-27 06:00" ) }
   end
 end
 
 
 describe Lock, "when sorted" do
   it "should be compared by <=>" do
-    lock_old = Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 05:00" ), "yutaro" )
-    lock_new = Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 06:00" ), "yutaro" )
+    lock_old = new_lock( :from => "1979-05-27 04:00", :to => "1979-05-27 05:00" )
+    lock_new = new_lock( :from => "1979-05-27 05:00", :to => "1979-05-27 06:00" )
     ( lock_old <=> lock_new ).should == -1
     ( lock_old <=> lock_old ).should == 0
     ( lock_new <=> lock_new ).should == 0
@@ -75,31 +73,26 @@ end
 
 
 describe Lock, "when represented as a string" do
-  before :each do
-    @user = "yutaro"
-  end
-
-
   context "when its duration falls within a day" do
-    subject { Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 06:00" ), @user ) }
+    subject { new_lock( :from => "1979-05-27 05:00", :to => "1979-05-27 06:00" ) }
     it { should be_shortened_into( "[yutaro] 1979/05/27 (Sun) 05:00 - 06:00" ) }
   end
 
 
   context "when its duration crosses 00:00" do
-    subject { Lock.new( Chronic.parse( "1979-05-27 23:00" ), Chronic.parse( "1979-05-28 01:00" ), @user ) }
+    subject { new_lock( :from => "1979-05-27 23:00", :to => "1979-05-28 01:00" ) }
     it { should be_shortened_into( "[yutaro] 1979/05/27 (Sun) 23:00 - 05/28 (Mon) 01:00" ) }
   end
 
 
   context "when its duration crosses the last day of a month" do
-    subject { Lock.new( Chronic.parse( "1979-01-31 23:00" ), Chronic.parse( "1979-02-1 01:00" ), @user ) }
+    subject { new_lock( :from => "1979-01-31 23:00", :to => "1979-02-1 01:00" ) }
     it { should be_shortened_into( "[yutaro] 1979/01/31 (Wed) 23:00 - 02/01 (Thu) 01:00" ) }
   end
 
 
   context "when its duration crosses a new year's day" do
-    subject { Lock.new( Chronic.parse( "1978-12-31 23:00" ), Chronic.parse( "1979-01-01 01:00" ), @user ) }
+    subject { new_lock( :from => "1978-12-31 23:00", :to => "1979-01-01 01:00" ) }
     it { should be_shortened_into( "[yutaro] 1978/12/31 (Sun) 23:00 - 1979/01/01 (Mon) 01:00" ) }
   end
 end

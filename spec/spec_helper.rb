@@ -15,6 +15,11 @@ require "spec"
 require "view"
 
 
+def new_lock duration
+  Lock.new( Chronic.parse( duration[ :from ] ), Chronic.parse( duration[ :to ] ), "yutaro" )
+end
+
+
 ### Local variables:
 ### mode: Ruby
 ### coding: utf-8-unix
