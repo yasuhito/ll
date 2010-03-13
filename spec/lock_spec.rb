@@ -9,6 +9,13 @@ Spec::Matchers.define :overwrap_with do | duration |
 end
 
 
+Spec::Matchers.define :shortened_into do | string |
+  match do | lock |
+    lock.to_s == string
+  end
+end
+
+
 describe Lock, "with 1 hour of duration from now" do
   context "when testing its liveness" do
     now = Time.now
@@ -69,39 +76,36 @@ describe Lock do
     ( lock_new <=> lock_new ).should == 0
     ( lock_new <=> lock_old ).should == 1
   end
+end
 
 
-  context "when converted to a string" do
-    context "when its duration falls within a day" do
-      it "should be shortened like: [user] yyyy/mm/dd (Sun) hh:mm - hh:mm" do
-        lock = Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 06:00" ), @user )
-        lock.to_s.should == "[yutaro] 1979/05/27 (Sun) 05:00 - 06:00"
-      end
-    end
+describe Lock, "when represented as a string" do
+  before :each do
+    @user = "yutaro"
+  end
 
 
-    context "when its duration crosses 00:00" do
-      it "should be shortened like: [user] yyyy/mm/dd (Wed) hh:mm - mm/dd (Thu) hh:mm" do
-        lock = Lock.new( Chronic.parse( "1979-05-27 23:00" ), Chronic.parse( "1979-05-28 01:00" ), @user )
-        lock.to_s.should == "[yutaro] 1979/05/27 (Sun) 23:00 - 05/28 (Mon) 01:00"
-      end
-    end
+  context "when its duration falls within a day" do
+    subject { Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 06:00" ), @user ) }
+    it { should shortened_into( "[yutaro] 1979/05/27 (Sun) 05:00 - 06:00" ) }
+  end
 
 
-    context "when its duration crosses the last day of a month" do
-      it "should be shortened like: [user] yyyy/mm/dd (Wed) hh:mm - mm/dd (Thu) hh:mm" do
-        lock = Lock.new( Chronic.parse( "1979-01-31 23:00" ), Chronic.parse( "1979-02-1 01:00" ), @user )
-        lock.to_s.should == "[yutaro] 1979/01/31 (Wed) 23:00 - 02/01 (Thu) 01:00"
-      end
-    end
+  context "when its duration crosses 00:00" do
+    subject { Lock.new( Chronic.parse( "1979-05-27 23:00" ), Chronic.parse( "1979-05-28 01:00" ), @user ) }
+    it { should shortened_into( "[yutaro] 1979/05/27 (Sun) 23:00 - 05/28 (Mon) 01:00" ) }
+  end
 
 
-    context "when its duration crosses a new year's day" do
-      it "should not be shortened, converted like: [user] yyyy/mm/dd (Wed) hh:mm - yyyy/mm/dd (Thu) hh:mm" do
-        lock = Lock.new( Chronic.parse( "1978-12-31 23:00" ), Chronic.parse( "1979-01-01 01:00" ), @user )
-        lock.to_s.should == "[yutaro] 1978/12/31 (Sun) 23:00 - 1979/01/01 (Mon) 01:00"
-      end
-    end
+  context "when its duration crosses the last day of a month" do
+    subject { Lock.new( Chronic.parse( "1979-01-31 23:00" ), Chronic.parse( "1979-02-1 01:00" ), @user ) }
+    it { should shortened_into( "[yutaro] 1979/01/31 (Wed) 23:00 - 02/01 (Thu) 01:00" ) }
+  end
+
+
+  context "when its duration crosses a new year's day" do
+    subject { Lock.new( Chronic.parse( "1978-12-31 23:00" ), Chronic.parse( "1979-01-01 01:00" ), @user ) }
+    it { should shortened_into( "[yutaro] 1978/12/31 (Sun) 23:00 - 1979/01/01 (Mon) 01:00" ) }
   end
 end
 
