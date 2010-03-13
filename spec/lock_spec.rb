@@ -1,10 +1,21 @@
 require File.join( File.dirname( __FILE__ ), "spec_helper" )
 
 
-Spec::Matchers.define :overwrap_with do | other |
+Spec::Matchers.define :overwrap_with do | duration |
   match do | lock |
+    other = Lock.new( Chronic.parse( duration[ :from ] ), Chronic.parse( duration[ :to ] ), "yutaro" )
     lock.overwrap_with other
   end
+end
+
+
+describe Lock, "1979-05-27 (Sun) 04:00 - 06:00" do
+  subject { Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), "yutaro" ) }
+  it { should overwrap_with( :from => "1979-05-27 05:00", :to => "1979-05-27 07:00" ) }
+  it { should overwrap_with( :from => "1979-05-27 03:00", :to => "1979-05-27 05:00" ) }
+  it { should overwrap_with( :from => "1979-05-27 03:00", :to => "1979-05-27 07:00" ) }
+  it { should overwrap_with( :from => "1979-05-27 05:00", :to => "1979-05-27 05:30" ) }
+  it { should_not overwrap_with( :from => "1979-05-27 07:00", :to => "1979-05-27 08:00" ) }
 end
 
 
@@ -22,13 +33,6 @@ describe Lock do
     ( lock_old <=> lock_old ).should == 0
     ( lock_new <=> lock_new ).should == 0
     ( lock_new <=> lock_old ).should == 1
-  end
-
-
-  context "when detecting overwrap" do
-    subject { Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), @user ) }
-    other = Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 07:00" ), @user )
-    it { should overwrap_with( other ) }
   end
 
 
