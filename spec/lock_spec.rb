@@ -62,15 +62,10 @@ describe Lock, "1979-05-27 (Sun) 04:00 - 06:00" do
 end
 
 
-describe Lock do
-  before :each do
-    @user = "yutaro"
-  end
-
-
-  it "should be sorted with <=>" do
-    lock_old = Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 05:00" ), @user )
-    lock_new = Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 06:00" ), @user )
+describe Lock, "when sorted" do
+  it "should be compared by <=>" do
+    lock_old = Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 05:00" ), "yutaro" )
+    lock_new = Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 06:00" ), "yutaro" )
     ( lock_old <=> lock_new ).should == -1
     ( lock_old <=> lock_old ).should == 0
     ( lock_new <=> lock_new ).should == 0
