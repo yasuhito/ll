@@ -8,6 +8,16 @@ describe Lock do
   end
 
 
+  it "should be sorted with <=>" do
+    lock_old = Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 05:00" ), @user )
+    lock_new = Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 06:00" ), @user )
+    ( lock_old <=> lock_new ).should == -1
+    ( lock_old <=> lock_old ).should == 0
+    ( lock_new <=> lock_new ).should == 0
+    ( lock_new <=> lock_old ).should == 1
+  end
+
+
   context "when calculating its duration" do
     from = Chronic.parse( "1979-05-27 05:00" )
     subject { Lock.new( from, from + @one_hour, @user ) }
