@@ -1,6 +1,13 @@
 require File.join( File.dirname( __FILE__ ), "spec_helper" )
 
 
+Spec::Matchers.define :overwrap_with do | other |
+  match do | lock |
+    lock.overwrap_with other
+  end
+end
+
+
 describe Lock do
   before :each do
     @one_hour = ChronicDuration.parse( "1 hour" )
@@ -15,6 +22,13 @@ describe Lock do
     ( lock_old <=> lock_old ).should == 0
     ( lock_new <=> lock_new ).should == 0
     ( lock_new <=> lock_old ).should == 1
+  end
+
+
+  context "when detecting overwrap" do
+    subject { Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), @user ) }
+    other = Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 07:00" ), @user )
+    it { should overwrap_with( other ) }
   end
 
 
