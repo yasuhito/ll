@@ -10,8 +10,14 @@ end
 
 
 describe Lock, "1979-05-27 (Sun) 04:00 - 06:00" do
+  before :each do
+    @user = "yutaro"
+    @lock = Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), @user )
+  end
+
+
   context "when detecting overwrap" do
-    subject { Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), "yutaro" ) }
+    subject { @lock }
     it { should overwrap_with( :from => "1979-05-27 05:00", :to => "1979-05-27 07:00" ) }
     it { should overwrap_with( :from => "1979-05-27 03:00", :to => "1979-05-27 05:00" ) }
     it { should overwrap_with( :from => "1979-05-27 03:00", :to => "1979-05-27 07:00" ) }
@@ -21,8 +27,15 @@ describe Lock, "1979-05-27 (Sun) 04:00 - 06:00" do
 
 
   context "when calculating its duration" do
-    subject { Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), "yutaro" ) }
+    subject { @lock }
     its( :duration ) { should == ChronicDuration.parse( "2 hours" ) }
+  end
+
+
+  context "when compared with an another lock" do
+    subject { @lock }
+    it { should == Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), @user ) }
+    it { should_not == Lock.new( Chronic.parse( "1979-05-27 05:00" ), Chronic.parse( "1979-05-27 06:00" ), @user ) }
   end
 end
 
@@ -41,26 +54,6 @@ describe Lock do
     ( lock_old <=> lock_old ).should == 0
     ( lock_new <=> lock_new ).should == 0
     ( lock_new <=> lock_old ).should == 1
-  end
-
-
-  context "when compared with an another lock" do
-    before :each do
-      @from = Chronic.parse( "1979-05-27 05:00" )
-      @to = Chronic.parse( "1979-05-27 06:00" )
-    end
-
-
-    context "when their durations are same" do
-      subject { Lock.new( @from, @to, @user ) }
-      it { should == Lock.new( @from, @to, @user ) }
-    end
-
-
-    context "when their durations are not same" do
-      subject { Lock.new( @from, @to, @user ) }
-      it { should_not == Lock.new( @from, @to + @one_hour, @user ) }
-    end
   end
 
 
