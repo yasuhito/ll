@@ -10,12 +10,20 @@ end
 
 
 describe Lock, "1979-05-27 (Sun) 04:00 - 06:00" do
-  subject { Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), "yutaro" ) }
-  it { should overwrap_with( :from => "1979-05-27 05:00", :to => "1979-05-27 07:00" ) }
-  it { should overwrap_with( :from => "1979-05-27 03:00", :to => "1979-05-27 05:00" ) }
-  it { should overwrap_with( :from => "1979-05-27 03:00", :to => "1979-05-27 07:00" ) }
-  it { should overwrap_with( :from => "1979-05-27 05:00", :to => "1979-05-27 05:30" ) }
-  it { should_not overwrap_with( :from => "1979-05-27 07:00", :to => "1979-05-27 08:00" ) }
+  context "when detecting overwrap" do
+    subject { Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), "yutaro" ) }
+    it { should overwrap_with( :from => "1979-05-27 05:00", :to => "1979-05-27 07:00" ) }
+    it { should overwrap_with( :from => "1979-05-27 03:00", :to => "1979-05-27 05:00" ) }
+    it { should overwrap_with( :from => "1979-05-27 03:00", :to => "1979-05-27 07:00" ) }
+    it { should overwrap_with( :from => "1979-05-27 05:00", :to => "1979-05-27 05:30" ) }
+    it { should_not overwrap_with( :from => "1979-05-27 07:00", :to => "1979-05-27 08:00" ) }
+  end
+
+
+  context "when calculating its duration" do
+    subject { Lock.new( Chronic.parse( "1979-05-27 04:00" ), Chronic.parse( "1979-05-27 06:00" ), "yutaro" ) }
+    its( :duration ) { should == ChronicDuration.parse( "2 hours" ) }
+  end
 end
 
 
@@ -33,13 +41,6 @@ describe Lock do
     ( lock_old <=> lock_old ).should == 0
     ( lock_new <=> lock_new ).should == 0
     ( lock_new <=> lock_old ).should == 1
-  end
-
-
-  context "when calculating its duration" do
-    from = Chronic.parse( "1979-05-27 05:00" )
-    subject { Lock.new( from, from + @one_hour, @user ) }
-    its( :duration ) { should == @one_hour }
   end
 
 
