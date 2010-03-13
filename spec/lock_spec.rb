@@ -8,6 +8,26 @@ describe Lock do
   end
 
 
+  context "when compared with an another lock" do
+    before :each do
+      @from = Chronic.parse( "1979-05-27 05:00" )
+      @to = Chronic.parse( "1979-05-27 06:00" )
+    end
+
+
+    context "when their durations are same" do
+      subject { Lock.new( @from, @to, @user ) }
+      it { should == Lock.new( @from, @to, @user ) }
+    end
+
+
+    context "when their durations are not same" do
+      subject { Lock.new( @from, @to, @user ) }
+      it { should_not == Lock.new( @from, @to + @one_hour, @user ) }
+    end
+  end
+
+
   context "when testing its liveness" do
     context "when it is expired" do
       past = Chronic.parse( "1979-05-27 05:00" )
