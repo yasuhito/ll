@@ -1,44 +1,66 @@
 require File.join( File.dirname( __FILE__ ), "spec_helper" )
 
 
+Spec::Matchers.define :locked do | nodes |
+  chain :with do | lock |
+    @lock = lock
+  end
+
+  match do | locker |
+    locker.find_nodes_locked_with( @lock ) == nodes
+  end
+end
+
+
 describe Locker do
+  context "when acquiring a lock" do
+    it "should raise if failed to resolve nodes' IP address" do
+      locker = Locker.new( "/tmp/ll.dat" )
+      lock = new_lock( :from => "2019-05-27 05:00", :to => "2019-05-27 08:00" )
+
+      lambda do
+        locker.lock [ "NO_SUCH_NODE" ], lock
+      end.should raise_error( LL::LockError, "Failed to lock NO_SUCH_NODE: invalid node name" )
+    end
+  end
+end
+
+
+describe Locker, "without resolver" do
   before :each do
     @data = "/tmp/ll.dat"
     FileUtils.rm_f @data
     @locker = Locker.new( @data, :no_resolver => true )
-    @time_now = Time.now
-    @yutaro_lock = Lock.new( Chronic.parse( "2019-05-27 05:00" ), Chronic.parse( "2019-05-27 08:00" ), "yutaro" )
-    @yasuhito_lock = Lock.new( Chronic.parse( "2019-05-27 21:00" ), Chronic.parse( "2019-05-27 22:00" ), "yasuhito" )
+    @yutaro_lock = new_lock( :from => "2019-05-27 05:00", :to => "2019-05-27 08:00", :user => "yutaro" )
+    @yasuhito_lock = new_lock( :from => "2019-05-27 21:00", :to => "2019-05-27 22:00", :user => "yasuhito" )
   end
 
 
-  it "should find nodes locked with a specified lock" do
-    @locker.lock "node001", @yasuhito_lock
-    @locker.lock "node002", @yasuhito_lock
-    @locker.lock "node002", @yutaro_lock
-    @locker.lock "node003", @yutaro_lock
+  context "when node001 and node002 are locked with yasuhito_lock, node002 and node003 are locked with yutaro_lock" do
+    before :each do
+      @locker.lock "node001", @yasuhito_lock
+      @locker.lock "node002", @yasuhito_lock
+      @locker.lock "node002", @yutaro_lock
+      @locker.lock "node003", @yutaro_lock
+    end
 
-    @locker.find_nodes_locked_with( @yasuhito_lock ).should == [ "node001", "node002" ]
-    @locker.find_nodes_locked_with( @yutaro_lock ).should == [ "node002", "node003" ]
+
+    subject { @locker }
+    it { should locked( [ "node001", "node002" ] ).with( @yasuhito_lock ) }
+    it { should locked( [ "node002", "node003" ] ).with( @yutaro_lock ) }
   end
 
 
   context "when acquiring a lock" do
     before :each do
+      @time_now = Time.now
       @lock_today = Lock.new( @time_now, Chronic.parse( "this midnight" ), "yasuhito" )
-    end
-
-
-    it "should raise if failed to resolve nodes' IP address" do
-      locker = Locker.new( @data )
-      lambda do
-        locker.lock [ "NO_SUCH_NODE" ], @yutaro_lock
-      end.should raise_error( LL::LockError, "Failed to lock NO_SUCH_NODE: invalid node name" )
     end
 
 
     it "should lock a node today" do
       @locker.lock [ "node001" ], @lock_today
+
       @locker.locks( "node001" ).size.should == 1
       @locker.locks( "node001" ).first.from.should == @time_now
       @locker.locks( "node001" ).first.to.should == Chronic.parse( "this midnight" )
@@ -46,22 +68,22 @@ describe Locker do
 
 
     it "should lock a node 8 hours" do
-      lock_8h = Lock.new( @time_now, @time_now + 8.hours, "yasuhito" )
-      @locker.lock [ "node001" ], lock_8h
+      @locker.lock [ "node001" ], Lock.new( @time_now, @time_now + 8.hours, "yasuhito" )
+
       @locker.locks( "node001" ).size.should == 1
       @locker.locks( "node001" ).first.duration.should == 8.hours
     end
 
 
     it "should lock a node 3 days from tomorrow" do
-      lock_3d = Lock.new( Chronic.parse( "tomorrow" ), Chronic.parse( "tomorrow" ) + 3.days, "yasuhito" )
-      @locker.lock [ "node001" ], lock_3d
+      @locker.lock [ "node001" ], Lock.new( Chronic.parse( "tomorrow" ), Chronic.parse( "tomorrow" ) + 3.days, "yasuhito" )
+
       @locker.locks( "node001" ).size.should == 1
       @locker.locks( "node001" ).first.duration.should == 3.days
     end
 
 
-    context "and someone already locked node001 today" do
+    context "when someone already locked node001 today" do
       before :each do
         @locker.lock [ "node001" ], @lock_today
       end
