@@ -7,7 +7,6 @@ begin
   app.start
 rescue LL::LockError, LL::ParseError
   $stderr.puts $!.message
-  show
   exit -1
 rescue
   $stderr.puts $!.message
