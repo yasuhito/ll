@@ -19,6 +19,13 @@ class Locker
   end
 
 
+  def test nodes, new_lock
+    nodes.each do | each |
+      test_lock each, new_lock
+    end
+  end
+
+
   def lock nodes, new_lock
     try_lock nodes, new_lock
     add nodes, new_lock
@@ -71,6 +78,15 @@ class Locker
       @list[ each ] += [ lock ]
     end
     save
+  end
+
+
+  def test_lock node, lock
+    @list[ node ].each do | each |
+      if each.overwrap_with( lock ) && each.user != lock.user
+        raise LL::LockError, "Failed to lock #{ node }"
+      end
+    end
   end
 
 

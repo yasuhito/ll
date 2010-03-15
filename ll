@@ -22,6 +22,11 @@ def show
 end
 
 
+def test
+  load "./script/test"
+end
+
+
 def version
   puts <<-EOL
 ll, version #{ LL::VERSION::STRING }
@@ -38,6 +43,8 @@ def method_for command
     return :unlock
   when "show", "status", "stat", "st", "s", "list", "l", "ls"
     return :show
+  when "test", "t"
+    return :test
   when "version", "-v", "--version"
     return :version
   when "help", "-h", "--help", "/?", "-?"

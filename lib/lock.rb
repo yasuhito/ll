@@ -9,6 +9,7 @@ class Lock
 
   attr_reader :from
   attr_reader :to
+  attr_reader :user
 
 
   def initialize from, to, user

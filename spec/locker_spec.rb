@@ -51,6 +51,25 @@ describe Locker, "without resolver" do
   end
 
 
+  context "when testing a lock" do
+    it "should raise if lock user is different" do
+      @locker.lock [ "node001" ], new_lock( :from => "2019-05-27 05:00", :to => "2019-05-27 08:00", :user => "yutaro" )
+      lambda do
+        @locker.test [ "node001" ],new_lock( :from => "2019-05-27 05:00", :to => "2019-05-27 08:00", :user => "yasuhito" )
+      end.should raise_error( LL::LockError, "Failed to lock node001" )
+    end
+
+
+    it "should not raise lock user is identical" do
+      lock = new_lock( :from => "2019-05-27 05:00", :to => "2019-05-27 08:00", :user => "yutaro" )
+      @locker.lock [ "node001" ], lock
+      lambda do
+        @locker.test [ "node001" ], lock
+      end.should_not raise_error
+    end
+  end
+
+
   context "when acquiring a lock" do
     before :each do
       @time_now = Time.now
@@ -80,6 +99,22 @@ describe Locker, "without resolver" do
 
       @locker.locks( "node001" ).size.should == 1
       @locker.locks( "node001" ).first.duration.should == 3.days
+    end
+
+
+    it "should raise if already locked by me" do
+      @locker.lock [ "node001" ], @lock_today
+      lambda do
+        @locker.lock [ "node001" ], @lock_today
+      end.should raise_error( LL::LockError, "Failed to lock node001" )
+    end
+
+
+    it "should raise if already locked by others" do
+      @locker.lock [ "node001" ], Lock.new( @time_now, @time_now + 8.hours, "yasuhito" )
+      lambda do
+        @locker.lock [ "node001" ], Lock.new( @time_now, @time_now + 8.hours, "yutaro" )
+      end.should raise_error( LL::LockError, "Failed to lock node001" )
     end
 
 
