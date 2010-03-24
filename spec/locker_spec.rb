@@ -30,7 +30,8 @@ describe Locker, "without resolver" do
   before :each do
     @data = "/tmp/ll.dat"
     FileUtils.rm_f @data
-    @locker = Locker.new( @data, :no_resolver => true )
+    @locker = Locker.new( :no_resolver => true )
+    @locker.load_locks @data
     @yutaro_lock = new_lock( :from => "2019-05-27 05:00", :to => "2019-05-27 08:00", :user => "yutaro" )
     @yasuhito_lock = new_lock( :from => "2019-05-27 21:00", :to => "2019-05-27 22:00", :user => "yasuhito" )
   end

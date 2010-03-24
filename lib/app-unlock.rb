@@ -35,7 +35,8 @@ class AppUnlock < App
 
   def setup
     @view = View.new( @debug_options.merge :quiet => @yes )
-    @locker = Locker.new( @data )
+    @locker = Locker.new
+    @locker.load_locks @data
   end
 
 

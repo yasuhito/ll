@@ -18,6 +18,7 @@ class AppShow < App
   def start
     @view = View.new( @debug_options )
     @locker = Locker.new( @data )
+    @locker.load_locks @data
     nodes.each do | node |
       show node
     end

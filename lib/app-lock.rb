@@ -14,9 +14,8 @@ class AppLock < App
 
 
   def initialize debug_options = {}
-    @messenger = debug_options[ :messenger ]
-    @debug_options = debug_options
-    super @debug_options
+    super debug_options
+    @locker = Locker.new( debug_options )
     @from = Time.now
     setup_option_parser
   end
@@ -31,7 +30,7 @@ class AppLock < App
 
   # [FIXME] global lock
   def start
-    @locker = Locker.new( @data, @debug_options )
+    @locker.load_locks @data
     @locker.lock @nodes, Lock.new( @from, @to, `whoami`.chomp )
   end
 

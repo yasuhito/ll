@@ -7,8 +7,12 @@ require "resolv"
 # A Locker class
 #
 class Locker
-  def initialize data, debug_options = {}
+  def initialize debug_options = {}
     @debug_options = debug_options
+  end
+
+
+  def load_locks data
     @data = data
     if FileTest.exists?( @data )
       @list = Marshal.load( IO.read( @data ) )
@@ -81,11 +85,9 @@ class Locker
   end
 
 
-  def test_lock node, lock
-    @list[ node ].each do | each |
-      if each.overwrap_with( lock ) && each.user != lock.user
-        raise LL::LockError, "Failed to lock #{ node }"
-      end
+  def test_lock node, new_lock
+    locks( node ).each do | each |
+      raise LL::LockError, "Failed to lock #{ node }" if each.conflict_with( new_lock )
     end
   end
 
@@ -109,7 +111,7 @@ class Locker
 
 
   def lockable? node, lock
-    @list[ node ].inject( true ) do | result, each |
+    locks( node ).inject( true ) do | result, each |
       result && ( not each.overwrap_with( lock ) )
     end
   end

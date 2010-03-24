@@ -29,6 +29,11 @@ class Lock
   end
 
 
+  def conflict_with other
+    self.overwrap_with( other ) && @user != other.user
+  end
+
+
   def overwrap_with other
     not ( @to < other.from || other.to < @from )
   end
