@@ -41,7 +41,7 @@ def method_for command
     return :lock
   when "unlock", "u", "rm", "release", "rel", "r", "delete", "del", "d"
     return :unlock
-  when "show", "status", "stat", "st", "s", "list", "l", "ls"
+  when "show", "status", "stat", "st", "s", "list", "ls"
     return :show
   when "test", "t"
     return :test
