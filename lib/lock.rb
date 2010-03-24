@@ -1,5 +1,10 @@
 #
-# A lock class
+# Lock with expiration date.
+#
+#  Lock.new( Chronic.parse( "1979-05-27 05:00" ),
+#            Chronic.parse( "1979-05-27 06:00" ),
+#            "yutaro" ).to_s
+#  #=> "[yutaro] 1979/05/27 (Sun) 05:00 - 06:00"
 #
 class Lock
   TIME_FORMAT_LONG = "%Y/%m/%d (%a) %H:%M"
@@ -30,7 +35,7 @@ class Lock
 
 
   def conflict_with other
-    self.overwrap_with( other ) && @user != other.user
+    overwrap_with( other ) && @user != other.user
   end
 
 
@@ -50,7 +55,7 @@ class Lock
 
 
   def to_s
-    "[#{ @user }] #{ from_string } - #{ to_string }"
+    "[#{ @user }] #{ format_from } - #{ format_to }"
   end
 
 
@@ -64,12 +69,12 @@ class Lock
   ##############################################################################
 
 
-  def from_string
+  def format_from
     @from.strftime TIME_FORMAT_LONG
   end
 
 
-  def to_string
+  def format_to
     if fit_within_a_day?
       @to.strftime TIME_FORMAT_SHORT
     elsif fit_within_a_year?
