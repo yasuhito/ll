@@ -31,7 +31,7 @@ class AppLock < App
   # [FIXME] global lock
   def start
     @locker.load_locks @data
-    @locker.lock @nodes, Lock.new( @from, @to, `whoami`.chomp )
+    @locker.lock @nodes, Lock.new( @from, @to, @debug_options[ :user ] || `whoami`.chomp )
   end
 
 
