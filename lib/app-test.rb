@@ -1,6 +1,9 @@
 require "app-lock"
 
 
+#
+# Checks if the specified nodes are lockable or not.
+#
 class AppTest < AppLock
   # [FIXME] global lock
   def start
