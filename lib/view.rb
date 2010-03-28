@@ -1,3 +1,6 @@
+#
+# CUI views for ll command
+#
 class View
   def initialize debug_options
     @quiet = debug_options[ :quiet ]
