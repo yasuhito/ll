@@ -95,8 +95,8 @@ end
 # Rdoc Task ####################################################################
 
 Rake::RDocTask.new do | t |
-  t.main = "README"
-  t.rdoc_files.include "README", "lib/**/*.rb"
+  t.main = "README.rdoc"
+  t.rdoc_files.include "README.rdoc", "lib/**/*.rb"
 end
 
 
