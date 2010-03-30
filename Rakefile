@@ -4,7 +4,6 @@ require "flay"
 require "flay_task"
 require "flog"
 require "rake/clean"
-require "reek/adapters/rake_task"
 require "roodi"
 require "roodi_task"
 require "spec/rake/spectask"
@@ -12,19 +11,16 @@ require "spec/rake/verify_rcov"
 require "hanna/rdoctask"
 
 
+Dir[ "tasks/**/*.rake" ].each do | t |
+  load t
+end
+
+
 task :default => [ :quality, :verify_rcov ]
 
 
 desc "Enforce Ruby code quality with static analysis of code"
 task :quality => [ :reek, :roodi, :flog, :flay ]
-
-
-Reek::RakeTask.new do | t |
-  t.fail_on_error = true
-  t.verbose = false
-  t.reek_opts = "--quiet"
-  t.source_files = "lib/**/*.rb"
-end
 
 
 RoodiTask.new do | t |
