@@ -1,7 +1,4 @@
-require "rake/tasklib"
 require "cucumber/rake/task"
-require "flay"
-require "flay_task"
 require "flog"
 require "rake/clean"
 require "spec/rake/spectask"
@@ -38,12 +35,6 @@ task :flog do
   unless bad_methods.empty?
     raise "#{ bad_methods.size } methods have a flog complexity > #{ threshold }"
   end
-end
-
-
-FlayTask.new do | t |
-  t.dirs = [ "lib", "script" ]
-  t.threshold = 0
 end
 
 
