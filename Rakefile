@@ -1,5 +1,4 @@
 require "cucumber/rake/task"
-require "flog"
 require "rake/clean"
 require "spec/rake/spectask"
 require "spec/rake/verify_rcov"
@@ -16,26 +15,6 @@ task :default => [ :quality, :verify_rcov ]
 
 desc "Enforce Ruby code quality with static analysis of code"
 task :quality => [ :reek, :roodi, :flog, :flay ]
-
-
-desc "Analyze for code complexity"
-task :flog do
-  flog = Flog.new
-  flog.flog [ "lib" ]
-  threshold = 10
-
-  bad_methods = flog.totals.select do | name, score |
-    name != "main#none" && score > threshold
-  end
-  bad_methods.sort do | a, b |
-    a[ 1 ] <=> b[ 1 ]
-  end.each do | name, score |
-    puts "%8.1f: %s" % [ score, name ]
-  end
-  unless bad_methods.empty?
-    raise "#{ bad_methods.size } methods have a flog complexity > #{ threshold }"
-  end
-end
 
 
 def rcov_dat
@@ -72,7 +51,7 @@ RCov::VerifyTask.new do | t |
 end
 
 
-# Rdoc Task ####################################################################
+# RDoc Task ####################################################################
 
 Rake::RDocTask.new do | t |
   t.main = "README.rdoc"
