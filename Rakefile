@@ -4,8 +4,6 @@ require "flay"
 require "flay_task"
 require "flog"
 require "rake/clean"
-require "roodi"
-require "roodi_task"
 require "spec/rake/spectask"
 require "spec/rake/verify_rcov"
 require "hanna/rdoctask"
@@ -21,11 +19,6 @@ task :default => [ :quality, :verify_rcov ]
 
 desc "Enforce Ruby code quality with static analysis of code"
 task :quality => [ :reek, :roodi, :flog, :flay ]
-
-
-RoodiTask.new do | t |
-  t.patterns =  [ "lib/**/*.rb" ]
-end
 
 
 desc "Analyze for code complexity"
