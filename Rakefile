@@ -2,7 +2,6 @@ require "cucumber/rake/task"
 require "rake/clean"
 require "spec/rake/spectask"
 require "spec/rake/verify_rcov"
-require "hanna/rdoctask"
 
 
 Dir[ "tasks/**/*.rake" ].each do | t |
@@ -11,7 +10,7 @@ end
 
 
 task :default => [ :quality, :verify_rcov ]
-
+task :verify_rcov => [ "spec", "cucumber" ]
 
 desc "Enforce Ruby code quality with static analysis of code"
 task :quality => [ :reek, :roodi, :flog, :flay ]
@@ -45,17 +44,8 @@ Spec::Rake::SpecTask.new do | t |
 end
 
 
-task :verify_rcov => [ "spec", "cucumber" ]
 RCov::VerifyTask.new do | t |
   t.threshold = 100.00
-end
-
-
-# RDoc Task ####################################################################
-
-Rake::RDocTask.new do | t |
-  t.main = "README.rdoc"
-  t.rdoc_files.include "README.rdoc", "lib/**/*.rb"
 end
 
 
