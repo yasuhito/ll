@@ -147,9 +147,9 @@ describe Locker, "without resolver" do
       @locker.lock "node001", @yutaro_lock
       @locker.lock "node001", @yasuhito_lock
 
-      @locker.unlock "node001", @yasuhito_lock
+      @locker.unlock Node.new( "node001", @yasuhito_lock )
       @locker.locks( "node001" ).should == [ @yutaro_lock ]
-      @locker.unlock "node001", @yutaro_lock
+      @locker.unlock Node.new( "node001", @yutaro_lock )
       @locker.locks( "node001" ).should be_empty
     end
 

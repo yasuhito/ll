@@ -1,5 +1,6 @@
 require "ll"
 require "lock"
+require "node"
 require "resolv"
 
 
@@ -32,13 +33,16 @@ class Locker
 
   def lock nodes, new_lock
     try_lock nodes, new_lock
-    add nodes, new_lock
+    nodes.each do | each |
+      @list[ each ] += [ new_lock ]
+    end
+    save
   end
 
 
-  def unlock node, lock
-    @list[ node ].delete_if do | each |
-      each == lock
+  def unlock node
+    @list[ node.name ].delete_if do | each |
+      each == node.lock
     end
     save
   end
@@ -46,7 +50,7 @@ class Locker
 
   def unlock_all lock
     nodes.each do | each |
-      unlock each, lock
+      unlock Node.new( each, lock )
     end
   end
 
@@ -75,14 +79,6 @@ class Locker
   ##############################################################################
   private
   ##############################################################################
-
-
-  def add nodes, lock
-    nodes.each do | each |
-      @list[ each ] += [ lock ]
-    end
-    save
-  end
 
 
   def test_lock node, new_lock

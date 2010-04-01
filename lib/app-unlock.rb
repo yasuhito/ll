@@ -1,5 +1,6 @@
 require "app"
 require "locker"
+require "node"
 
 
 #
@@ -71,13 +72,13 @@ class AppUnlock < App
 
   def release lock
     @nodes.each do | each |
-      @locker.unlock each, lock
+      @locker.unlock Node.new( each, lock )
     end
   end
 
 
   def release_all node, lock
-    @locker.unlock node, lock
+    @locker.unlock Node.new( node, lock )
     unlock_similar_locks lock
   end
 
