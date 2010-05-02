@@ -7,6 +7,7 @@ require "app-lock"
 class AppTest < AppLock
   # [FIXME] global lock
   def start
+    @locker.load_locks @data
     @locker.test @nodes, Lock.new( @from, @to, `whoami`.chomp )
   end
 end
