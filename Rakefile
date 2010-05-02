@@ -2,7 +2,7 @@ require "rake/clean"
 
 
 $rcov_dat = File.join File.dirname( __FILE__ ), "coverage.dat"
-$rcov_opts = [ "--aggregate #{ $rcov_dat }", "--exclude /home/build/.gem", "-T" ]
+$rcov_opts = [ "--aggregate #{ $rcov_dat }", %{--exclude /var/lib/gems,#{ File.expand_path "~/.rvm" }}, "-T" ]
 
 
 Dir[ "tasks/**/*.rake" ].each do | t |
