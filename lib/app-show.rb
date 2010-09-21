@@ -7,6 +7,9 @@ require "locker"
 #
 class AppShow < App
   def parse argv = []
+    @opt.on( "--json" ) do
+      @json = true
+    end
     @opt.on( "--data [FILE]" ) do | val |
       @data = val
     end
@@ -16,25 +19,16 @@ class AppShow < App
 
 
   def start
-    @view = View.new( @debug_options )
+    @view = View.new( @json ? :json : :text, @debug_options )
     @locker = Locker.new( @data )
     @locker.load_locks @data
-    nodes.each do | node |
-      show node
-    end
+    @view.show nodes, @locker.locks
   end
 
 
   ##############################################################################
   private
   ##############################################################################
-
-
-  def show node
-    status = @locker.locks( node )
-    return if status.empty?
-    @view.show node, status
-  end
 
 
   def nodes

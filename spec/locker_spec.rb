@@ -81,25 +81,25 @@ describe Locker, "without resolver" do
     it "should lock a node today" do
       @locker.lock [ "node001" ], @lock_today
 
-      @locker.locks( "node001" ).size.should == 1
-      @locker.locks( "node001" ).first.from.should == @time_now
-      @locker.locks( "node001" ).first.to.should == Chronic.parse( "this midnight" )
+      @locker.locks_for( "node001" ).size.should == 1
+      @locker.locks_for( "node001" ).first.from.should == @time_now
+      @locker.locks_for( "node001" ).first.to.should == Chronic.parse( "this midnight" )
     end
 
 
     it "should lock a node 8 hours" do
       @locker.lock [ "node001" ], Lock.new( @time_now, @time_now + 8.hours, "yasuhito" )
 
-      @locker.locks( "node001" ).size.should == 1
-      @locker.locks( "node001" ).first.duration.should == 8.hours
+      @locker.locks_for( "node001" ).size.should == 1
+      @locker.locks_for( "node001" ).first.duration.should == 8.hours
     end
 
 
     it "should lock a node 3 days from tomorrow" do
       @locker.lock [ "node001" ], Lock.new( Chronic.parse( "tomorrow" ), Chronic.parse( "tomorrow" ) + 3.days, "yasuhito" )
 
-      @locker.locks( "node001" ).size.should == 1
-      @locker.locks( "node001" ).first.duration.should == 3.days
+      @locker.locks_for( "node001" ).size.should == 1
+      @locker.locks_for( "node001" ).first.duration.should == 3.days
     end
 
 
@@ -148,9 +148,9 @@ describe Locker, "without resolver" do
       @locker.lock "node001", @yasuhito_lock
 
       @locker.unlock Node.new( "node001", @yasuhito_lock )
-      @locker.locks( "node001" ).should == [ @yutaro_lock ]
+      @locker.locks_for( "node001" ).should == [ @yutaro_lock ]
       @locker.unlock Node.new( "node001", @yutaro_lock )
-      @locker.locks( "node001" ).should be_empty
+      @locker.locks_for( "node001" ).should be_empty
     end
 
 
@@ -161,9 +161,9 @@ describe Locker, "without resolver" do
       @locker.lock "node003", @yutaro_lock
 
       @locker.unlock_all( @yasuhito_lock )
-      @locker.locks( "node001" ).should be_empty
-      @locker.locks( "node002" ).should == [ @yutaro_lock ]
-      @locker.locks( "node003" ).should == [ @yutaro_lock ]
+      @locker.locks_for( "node001" ).should be_empty
+      @locker.locks_for( "node002" ).should == [ @yutaro_lock ]
+      @locker.locks_for( "node003" ).should == [ @yutaro_lock ]
     end
   end
 end

@@ -71,7 +71,12 @@ class Locker
   end
 
 
-  def locks node
+  def locks
+    @list.dup
+  end
+
+
+  def locks_for node
     @list[ node ].dup
   end
 
@@ -82,7 +87,7 @@ class Locker
 
 
   def test_lock node, new_lock
-    locks( node ).each do | each |
+    locks_for( node ).each do | each |
       raise LL::LockError, "Failed to lock #{ node }" if each.conflict_with( new_lock )
     end
   end
@@ -107,7 +112,7 @@ class Locker
 
 
   def lockable? node, lock
-    locks( node ).inject( true ) do | result, each |
+    locks_for( node ).inject( true ) do | result, each |
       result && ( not each.overwrap_with( lock ) )
     end
   end

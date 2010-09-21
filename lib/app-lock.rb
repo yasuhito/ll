@@ -36,7 +36,7 @@ class AppLock < App
 
 
   def locks_for node
-    @locker.locks node
+    @locker.locks_for node
   end
 
 

@@ -2,17 +2,22 @@
 # CUI views for ll command
 #
 class View
-  def initialize debug_options
+  def initialize mode, debug_options
+    @mode = mode
     @quiet = debug_options[ :quiet ]
     @stdin = debug_options[ :stdin ]
     @messenger = debug_options[ :messenger ]
   end
 
 
-  def show node, locks
-    info "#{ node }:"
-    locks.sort.each do | each |
-      info "  #{ each }"
+  def show nodes, locks
+    if @mode == :json
+      require "json"
+      show_json locks
+    else
+      nodes.each do | each |
+        show_text each, locks
+      end
     end
   end
 
@@ -42,6 +47,21 @@ class View
   ##############################################################################
   private
   ##############################################################################
+
+
+  def show_json locks
+    info locks.to_json
+  end
+
+
+  def show_text node, locks
+    status = locks[ node ]
+    return if status.empty?
+    info "#{ node }:"
+    status.sort.each do | each |
+      info "  #{ each }"
+    end
+  end
 
 
   def read_from_stdin

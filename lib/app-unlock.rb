@@ -35,14 +35,14 @@ class AppUnlock < App
 
 
   def setup
-    @view = View.new( @debug_options.merge :quiet => @yes )
+    @view = View.new( :text, @debug_options.merge( :quiet => @yes ) )
     @locker = Locker.new
     @locker.load_locks @data
   end
 
 
   def maybe_unlock_one_node node
-    locks = @locker.locks( node )
+    locks = @locker.locks_for( node )
     @view.show_locks_with_index [ node ], locks
     if @yes
       locks.each do | each |
@@ -84,8 +84,8 @@ class AppUnlock < App
 
 
   def get_common_locks
-    @nodes.inject( @locker.locks( @nodes.first ) ) do | result, each |
-      result & @locker.locks( each )
+    @nodes.inject( @locker.locks_for( @nodes.first ) ) do | result, each |
+      result & @locker.locks_for( each )
     end
   end
 
@@ -101,7 +101,7 @@ class AppUnlock < App
 
   def prompt_unlock_similar_locks lock
     @locker.find_nodes_locked_with( lock ).each do | node |
-      @view.show node, [ lock ]
+      @view.show node, node => [ lock ]
     end
     @view.prompt_yesno( "Unlock similar locks? [Y/n]" )
   end

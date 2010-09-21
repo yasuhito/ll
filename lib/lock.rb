@@ -59,6 +59,14 @@ class Lock
   end
 
 
+  def to_json *args
+    {
+      "json_class" => self.class.name,
+      "data" => { :user => @user, :from => @from, :to => @to },
+    }.to_json( *args )
+  end
+
+
   def inspect
     "#<Lock:#{__id__} #{ to_s }>"
   end
