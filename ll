@@ -3,6 +3,7 @@ $real_path = File.symlink?( __FILE__ ) ? File.readlink( __FILE__ ) : __FILE__
 $LOAD_PATH << File.join( File.dirname( $real_path ), "lib" )
 
 
+require "rubygems"
 require "fileutils"
 require "ll"
 
